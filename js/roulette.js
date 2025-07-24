@@ -1,7 +1,10 @@
 class Roulette {
     constructor(canvas, config) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+        this.ctx = canvas.getContext('2d', { 
+            alpha: false,
+            desynchronized: true 
+        });
         this.config = config;
         this.rotation = 0;
         this.isSpinning = false;
@@ -11,6 +14,10 @@ class Roulette {
         this.onSpinComplete = null;
         this.acceleration = 0.98;
         this.selectedResult = null;
+        
+        // Performance optimizations
+        this.ctx.imageSmoothingEnabled = true;
+        this.ctx.imageSmoothingQuality = 'low';
     }
 
     calculateTotalWeight() {

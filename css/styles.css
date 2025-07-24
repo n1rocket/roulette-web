@@ -531,6 +531,29 @@ body {
     text-align: right;
 }
 
+.history-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.history-view-button {
+    flex: 1;
+    padding: 8px 15px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    color: var(--text-primary);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.history-view-button:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-pink);
+}
+
 .history-list {
     list-style: none;
     max-height: 200px;
@@ -547,6 +570,34 @@ body {
 
 .history-item:last-child {
     border-bottom: none;
+}
+
+.graph-view {
+    background: var(--bg-primary);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+#historyChart {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 15px;
+}
+
+.graph-controls {
+    display: flex;
+    justify-content: center;
+}
+
+.chart-selector {
+    padding: 8px 15px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    color: var(--text-primary);
+    font-size: 14px;
+    cursor: pointer;
 }
 
 .history-result {
@@ -820,10 +871,12 @@ body {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+    flex-wrap: wrap;
 }
 
 .preset-dropdown {
     flex: 1;
+    min-width: 200px;
     padding: 10px;
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
@@ -838,6 +891,11 @@ body {
     border-color: var(--accent-pink);
 }
 
+.preset-dropdown optgroup {
+    font-weight: bold;
+    color: var(--accent-cs-orange);
+}
+
 .preset-button {
     padding: 10px 20px;
     background: var(--accent-purple);
@@ -847,6 +905,12 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+}
+
+.preset-button[title] {
+    padding: 10px 15px;
+    min-width: 45px;
+}
 }
 
 .preset-button:hover {

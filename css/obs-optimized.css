@@ -53,6 +53,30 @@ body.obs-mode .modal-content {
     backface-visibility: hidden;
 }
 
+/* Disable expensive effects in OBS mode */
+body.obs-mode {
+    scroll-behavior: auto !important;
+}
+
+body.obs-mode * {
+    scroll-behavior: auto !important;
+}
+
+/* Optimize particle rendering */
+body.obs-mode #particleCanvas {
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: pixelated;
+}
+
+/* Reduce reflows */
+body.obs-mode .stats,
+body.obs-mode .history-list,
+body.obs-mode .option-stats {
+    will-change: contents;
+}
+
 /* Reduce repaints */
 body.obs-mode .stats,
 body.obs-mode .history-list {

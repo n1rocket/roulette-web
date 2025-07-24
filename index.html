@@ -41,18 +41,24 @@
                             <div class="preset-selector">
                                 <select id="presetSelect" class="preset-dropdown">
                                     <option value="">-- Seleccionar Preset --</option>
-                                    <option value="cs2">Counter-Strike 2</option>
-                                    <option value="valorant">Valorant</option>
-                                    <option value="fortnite">Fortnite</option>
-                                    <option value="apex">Apex Legends</option>
-                                    <option value="lol">League of Legends</option>
-                                    <option value="streaming">Streaming</option>
-                                    <option value="challenges">Retos</option>
-                                    <option value="decisions">Decisiones</option>
-                                    <option value="minecraft">Minecraft</option>
-                                    <option value="gta">GTA Roleplay</option>
+                                    <optgroup label="Presets Incluidos">
+                                        <option value="cs2">Counter-Strike 2</option>
+                                        <option value="valorant">Valorant</option>
+                                        <option value="fortnite">Fortnite</option>
+                                        <option value="apex">Apex Legends</option>
+                                        <option value="lol">League of Legends</option>
+                                        <option value="streaming">Streaming</option>
+                                        <option value="challenges">Retos</option>
+                                        <option value="decisions">Decisiones</option>
+                                        <option value="minecraft">Minecraft</option>
+                                        <option value="gta">GTA Roleplay</option>
+                                    </optgroup>
+                                    <optgroup label="Presets Personalizados" id="customPresetsGroup">
+                                    </optgroup>
                                 </select>
                                 <button id="loadPreset" class="preset-button">Cargar</button>
+                                <button id="savePreset" class="preset-button" title="Guardar preset actual">💾</button>
+                                <button id="deletePreset" class="preset-button" title="Eliminar preset personalizado">🗑️</button>
                             </div>
                             <div id="optionsList" class="options-list"></div>
                             <button id="addOption" class="add-button">+ AÑADIR OPCIÓN</button>
@@ -91,7 +97,23 @@
                         
                         <div class="panel-section">
                             <h3>HISTORIAL</h3>
-                            <ul id="history" class="history-list"></ul>
+                            <div class="history-controls">
+                                <button id="toggleHistoryView" class="history-view-button">📊 Vista Gráfica</button>
+                                <button id="exportHistory" class="history-view-button">📥 Exportar</button>
+                            </div>
+                            <div id="historyView" class="history-view">
+                                <ul id="history" class="history-list"></ul>
+                            </div>
+                            <div id="graphView" class="graph-view" style="display: none;">
+                                <canvas id="historyChart" width="400" height="200"></canvas>
+                                <div class="graph-controls">
+                                    <select id="chartType" class="chart-selector">
+                                        <option value="pie">Gráfico Circular</option>
+                                        <option value="bar">Gráfico de Barras</option>
+                                        <option value="line">Línea de Tiempo</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="panel-section">
@@ -191,6 +213,7 @@
     <script src="js/presets.js"></script>
     <script src="js/roulette.js"></script>
     <script src="js/particles.js"></script>
+    <script src="js/charts.js"></script>
     <script src="js/app.js"></script>
     <script src="js/obs-helper.js"></script>
 </body>

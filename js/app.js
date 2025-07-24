@@ -27,9 +27,16 @@ class App {
         
         // Initialize preset manager
         this.presetManager = new PresetManager(this.config);
+        this.loadCustomPresets();
         
         // Initialize auto-spin
         this.autoSpinInterval = null;
+        
+        // Initialize chart manager
+        const chartCanvas = document.getElementById('historyChart');
+        if (chartCanvas) {
+            this.chartManager = new ChartManager(chartCanvas, this.config);
+        }
         
         console.log('App initialized with options:', this.config.options);
     }
@@ -56,7 +63,12 @@ class App {
         document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
         document.getElementById('copyOBSUrl').addEventListener('click', () => this.copyOBSUrl());
         document.getElementById('loadPreset').addEventListener('click', () => this.loadPreset());
+        document.getElementById('savePreset').addEventListener('click', () => this.saveCustomPreset());
+        document.getElementById('deletePreset').addEventListener('click', () => this.deleteCustomPreset());
         document.getElementById('resetStats').addEventListener('click', () => this.resetStatistics());
+        document.getElementById('toggleHistoryView').addEventListener('click', () => this.toggleHistoryView());
+        document.getElementById('exportHistory').addEventListener('click', () => this.exportHistory());
+        document.getElementById('chartType').addEventListener('change', (e) => this.changeChartType(e.target.value));
         
         // OBS Settings listeners
         this.setupOBSSettingsListeners();
@@ -476,17 +488,15 @@ class App {
         resultText.textContent = result;
         modal.classList.add('show');
         
-        // Add particle effects
-        if (typeof particleSystem !== 'undefined') {
+        // Add particle effects (skip in performance mode)
+        if (typeof particleSystem !== 'undefined' && !document.body.classList.contains('performance-mode')) {
             particleSystem.celebrate();
-        }
-        
-        // Clear particles after 5 seconds
-        setTimeout(() => {
-            if (typeof particleSystem !== 'undefined') {
+            
+            // Clear particles after 5 seconds
+            setTimeout(() => {
                 particleSystem.clear();
-            }
-        }, 5000);
+            }, 5000);
+        }
     }
     
     closeModal() {
@@ -769,6 +779,57 @@ class App {
         }, 3000);
     }
     
+    loadCustomPresets() {
+        const customPresets = this.presetManager.getCustomPresets();
+        const selectGroup = document.getElementById('customPresetsGroup');
+        selectGroup.innerHTML = '';
+        
+        Object.keys(customPresets).forEach(key => {
+            const option = document.createElement('option');
+            option.value = `custom_${key}`;
+            option.textContent = customPresets[key].name;
+            selectGroup.appendChild(option);
+        });
+    }
+    
+    saveCustomPreset() {
+        const name = prompt('Nombre del preset personalizado:');
+        if (!name) return;
+        
+        const key = name.toLowerCase().replace(/\s+/g, '_');
+        const success = this.presetManager.createCustomPreset(name, this.config.options);
+        
+        if (success) {
+            this.loadCustomPresets();
+            alert(`Preset "${name}" guardado correctamente!`);
+        } else {
+            alert('Error al guardar el preset');
+        }
+    }
+    
+    deleteCustomPreset() {
+        const select = document.getElementById('presetSelect');
+        const selectedValue = select.value;
+        
+        if (!selectedValue.startsWith('custom_')) {
+            alert('Selecciona un preset personalizado para eliminar');
+            return;
+        }
+        
+        const key = selectedValue.replace('custom_', '');
+        const customPresets = this.presetManager.getCustomPresets();
+        
+        if (customPresets[key]) {
+            if (confirm(`¿Eliminar el preset "${customPresets[key].name}"?`)) {
+                delete customPresets[key];
+                localStorage.setItem('customPresets', JSON.stringify(customPresets));
+                this.loadCustomPresets();
+                select.value = '';
+                alert('Preset eliminado');
+            }
+        }
+    }
+    
     loadPreset() {
         const select = document.getElementById('presetSelect');
         const presetName = select.value;
@@ -778,19 +839,163 @@ class App {
             return;
         }
         
-        if (this.presetManager.loadPreset(presetName)) {
+        let success = false;
+        let presetDisplayName = select.options[select.selectedIndex].text;
+        
+        // Check if it's a custom preset
+        if (presetName.startsWith('custom_')) {
+            const key = presetName.replace('custom_', '');
+            const customPresets = this.presetManager.getCustomPresets();
+            if (customPresets[key]) {
+                this.config.options = [...customPresets[key].options];
+                this.config.saveToLocalStorage();
+                success = true;
+            }
+        } else {
+            // Load built-in preset
+            success = this.presetManager.loadPreset(presetName);
+        }
+        
+        if (success) {
             // Update UI
             this.renderOptions();
             this.roulette.draw();
+            this.updateStats();
             
             // Show notification
-            this.showPresetNotification(`Preset "${select.options[select.selectedIndex].text}" cargado`);
+            this.showPresetNotification(`Preset "${presetDisplayName}" cargado`);
             
             // Reset select
             select.value = '';
         } else {
             alert('Error al cargar el preset');
         }
+    }
+    
+    toggleHistoryView() {
+        const historyView = document.getElementById('historyView');
+        const graphView = document.getElementById('graphView');
+        const button = document.getElementById('toggleHistoryView');
+        
+        if (historyView.style.display === 'none') {
+            historyView.style.display = 'block';
+            graphView.style.display = 'none';
+            button.textContent = '📊 Vista Gráfica';
+        } else {
+            historyView.style.display = 'none';
+            graphView.style.display = 'block';
+            button.textContent = '📝 Vista Lista';
+            
+            if (this.chartManager) {
+                this.chartManager.draw(document.getElementById('chartType').value);
+            }
+        }
+    }
+    
+    changeChartType(type) {
+        if (this.chartManager) {
+            this.chartManager.draw(type);
+        }
+    }
+    
+    exportHistory() {
+        const data = {
+            metadata: {
+                exportDate: new Date().toISOString(),
+                totalSpins: this.config.statistics.totalSpins,
+                sessionSpins: this.sessionSpins,
+                options: this.config.options
+            },
+            statistics: this.config.statistics,
+            history: this.config.history,
+            analysis: this.generateAnalysis()
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `roulette-history-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    
+    generateAnalysis() {
+        const stats = this.config.statistics.optionCounts;
+        const total = this.config.statistics.totalSpins;
+        
+        if (total === 0) return { message: 'No hay datos para analizar' };
+        
+        const analysis = {
+            totalSpins: total,
+            sessionSpins: this.sessionSpins,
+            optionAnalysis: []
+        };
+        
+        this.config.options.forEach(option => {
+            const count = stats[option.text] || 0;
+            const actualPercentage = (count / total * 100).toFixed(2);
+            const expectedPercentage = this.calculateExpectedPercentage(option);
+            const deviation = (actualPercentage - expectedPercentage).toFixed(2);
+            
+            analysis.optionAnalysis.push({
+                option: option.text,
+                count: count,
+                actualPercentage: parseFloat(actualPercentage),
+                expectedPercentage: parseFloat(expectedPercentage),
+                deviation: parseFloat(deviation),
+                deviationStatus: Math.abs(deviation) < 5 ? 'normal' : Math.abs(deviation) < 10 ? 'moderada' : 'alta'
+            });
+        });
+        
+        // Sort by deviation
+        analysis.optionAnalysis.sort((a, b) => Math.abs(b.deviation) - Math.abs(a.deviation));
+        
+        // Find patterns
+        analysis.patterns = this.findPatterns();
+        
+        return analysis;
+    }
+    
+    findPatterns() {
+        const patterns = {
+            streaks: [],
+            hotOptions: [],
+            coldOptions: []
+        };
+        
+        // Find streaks
+        let currentStreak = { option: null, count: 0 };
+        this.config.history.forEach(entry => {
+            if (entry.result === currentStreak.option) {
+                currentStreak.count++;
+            } else {
+                if (currentStreak.count >= 3) {
+                    patterns.streaks.push({ ...currentStreak });
+                }
+                currentStreak = { option: entry.result, count: 1 };
+            }
+        });
+        
+        // Find hot and cold options
+        const recentHistory = this.config.history.slice(0, 20);
+        const recentCounts = {};
+        recentHistory.forEach(entry => {
+            recentCounts[entry.result] = (recentCounts[entry.result] || 0) + 1;
+        });
+        
+        this.config.options.forEach(option => {
+            const recentCount = recentCounts[option.text] || 0;
+            const expectedCount = 20 * (option.weight / this.roulette.calculateTotalWeight());
+            
+            if (recentCount > expectedCount * 1.5) {
+                patterns.hotOptions.push(option.text);
+            } else if (recentCount < expectedCount * 0.5) {
+                patterns.coldOptions.push(option.text);
+            }
+        });
+        
+        return patterns;
     }
     
     showPresetNotification(message) {
