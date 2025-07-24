@@ -1,0 +1,210 @@
+/* OBS Browser Source Optimizations */
+
+/* Remove background for transparency in OBS */
+body.obs-mode {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+/* Ensure modal works properly in OBS */
+body.obs-mode .modal {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+}
+
+/* Remove shadows that might cause performance issues */
+body.obs-mode .roulette-wrapper {
+    box-shadow: none;
+    border-width: 2px;
+}
+
+body.obs-mode .spin-button {
+    box-shadow: 0 0 20px var(--shadow-color);
+}
+
+/* Simplify animations for better performance */
+body.obs-mode * {
+    animation-duration: 0.5s !important;
+}
+
+/* Hide config panel by default in OBS */
+body.obs-mode .bottom-section {
+    display: none;
+}
+
+/* Show only essential elements */
+body.obs-mode.show-config .bottom-section {
+    display: block;
+}
+
+/* Optimize text rendering */
+body.obs-mode {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* GPU acceleration for transforms */
+body.obs-mode .roulette-wrapper,
+body.obs-mode #roulette,
+body.obs-mode .modal-content {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Reduce repaints */
+body.obs-mode .stats,
+body.obs-mode .history-list {
+    contain: layout style paint;
+}
+
+/* Simplified modal for OBS */
+body.obs-mode .modal-content {
+    box-shadow: 0 0 30px var(--shadow-color);
+}
+
+/* Compact mode for smaller OBS scenes */
+body.compact-mode {
+    zoom: 0.8;
+}
+
+body.compact-mode .title {
+    font-size: 56px;
+}
+
+body.compact-mode .subtitle {
+    font-size: 18px;
+}
+
+body.compact-mode #roulette {
+    width: 500px;
+    height: 500px;
+}
+
+/* Ultra compact mode */
+body.ultra-compact {
+    zoom: 0.6;
+}
+
+body.ultra-compact .header {
+    margin-bottom: 20px;
+}
+
+body.ultra-compact .roulette-container {
+    gap: 20px;
+}
+
+/* Chroma key mode (green screen) */
+body.chroma-mode {
+    background-color: #00ff00 !important;
+}
+
+body.chroma-mode .modal {
+    background: rgba(0, 0, 0, 0.95);
+}
+
+/* High contrast mode for better visibility */
+body.high-contrast {
+    --text-primary: #ffffff;
+    --text-secondary: #ffffff;
+    --bg-secondary: #000000;
+    --bg-tertiary: #1a1a1a;
+    --border-color: #ffffff;
+}
+
+body.high-contrast .option-input,
+body.high-contrast .control-button {
+    border-width: 2px;
+}
+
+/* Performance mode - disable non-essential animations */
+body.performance-mode * {
+    animation: none !important;
+    transition: none !important;
+}
+
+body.performance-mode .star {
+    display: none;
+}
+
+/* Stream alert mode - larger result display */
+body.alert-mode .modal-content {
+    max-width: 700px;
+    padding: 60px;
+}
+
+body.alert-mode .modal-title {
+    font-size: 72px;
+}
+
+body.alert-mode .result-text {
+    font-size: 54px;
+    animation: none;
+    transform: scale(1.2);
+}
+
+/* Custom OBS control panel */
+.obs-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 999;
+}
+
+body.obs-mode .obs-controls {
+    display: flex;
+}
+
+.obs-control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--accent-pink);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.obs-control-btn:hover {
+    background: var(--accent-pink);
+}
+
+/* Transparent panel mode */
+body.transparent-panels .panel-section,
+body.transparent-panels .config-panel {
+    background: rgba(26, 26, 26, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+/* No header mode for minimal display */
+body.no-header .header {
+    display: none;
+}
+
+body.no-header .roulette-section {
+    margin-bottom: 20px;
+}
+
+/* Custom CSS for specific streaming scenarios */
+@media (max-height: 600px) {
+    body.obs-mode .header {
+        margin-bottom: 20px;
+    }
+    
+    body.obs-mode .roulette-container {
+        gap: 20px;
+    }
+    
+    body.obs-mode #roulette {
+        width: 400px;
+        height: 400px;
+    }
+}

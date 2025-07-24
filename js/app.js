@@ -35,6 +35,10 @@ class App {
         document.getElementById('importConfig').addEventListener('click', () => this.importConfig());
         document.getElementById('toggleConfig').addEventListener('click', () => this.toggleConfigPanel());
         document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
+        document.getElementById('copyOBSUrl').addEventListener('click', () => this.copyOBSUrl());
+        
+        // OBS Settings listeners
+        this.setupOBSSettingsListeners();
         
         document.getElementById('importFile').addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -254,15 +258,224 @@ class App {
         resultText.textContent = result;
         modal.classList.add('show');
         
-        // Add some confetti or special effects here if desired
-        if (this.config.soundEnabled) {
-            // Play win sound is already handled in roulette.js
+        // Add particle effects
+        if (typeof particleSystem !== 'undefined') {
+            particleSystem.celebrate();
         }
+        
+        // Clear particles after 5 seconds
+        setTimeout(() => {
+            if (typeof particleSystem !== 'undefined') {
+                particleSystem.clear();
+            }
+        }, 5000);
     }
     
     closeModal() {
         const modal = document.getElementById('resultModal');
         modal.classList.remove('show');
+    }
+    
+    setupOBSSettingsListeners() {
+        const settings = {
+            'obsMode': 'obs-mode',
+            'compactMode': 'compact-mode',
+            'ultraCompactMode': 'ultra-compact',
+            'chromaMode': 'chroma-mode',
+            'highContrastMode': 'high-contrast',
+            'performanceMode': 'performance-mode',
+            'alertMode': 'alert-mode',
+            'transparentMode': 'transparent-panels',
+            'noHeaderMode': 'no-header'
+        };
+        
+        Object.keys(settings).forEach(id => {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                checkbox.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        document.body.classList.add(settings[id]);
+                    } else {
+                        document.body.classList.remove(settings[id]);
+                    }
+                    this.saveOBSSettings();
+                });
+            }
+        });
+        
+        // Hide button listener
+        const hideButton = document.getElementById('hideButton');
+        if (hideButton) {
+            hideButton.addEventListener('change', (e) => {
+                const spinButton = document.getElementById('spinButton');
+                if (e.target.checked) {
+                    spinButton.style.display = 'none';
+                } else {
+                    spinButton.style.display = '';
+                }
+                this.saveOBSSettings();
+            });
+        }
+        
+        // Zoom level listener
+        const zoomLevel = document.getElementById('zoomLevel');
+        const zoomValue = document.getElementById('zoomValue');
+        if (zoomLevel) {
+            zoomLevel.addEventListener('input', (e) => {
+                const zoom = e.target.value;
+                document.body.style.zoom = zoom;
+                zoomValue.textContent = Math.round(zoom * 100) + '%';
+                this.saveOBSSettings();
+            });
+        }
+        
+        // Auto-spin listener
+        const autoSpinInterval = document.getElementById('autoSpinInterval');
+        if (autoSpinInterval) {
+            autoSpinInterval.addEventListener('change', (e) => {
+                const interval = parseInt(e.target.value);
+                this.setAutoSpin(interval);
+                this.saveOBSSettings();
+            });
+        }
+        
+        // Load saved settings
+        this.loadOBSSettings();
+    }
+    
+    saveOBSSettings() {
+        const settings = {
+            obsMode: document.getElementById('obsMode')?.checked || false,
+            compactMode: document.getElementById('compactMode')?.checked || false,
+            ultraCompactMode: document.getElementById('ultraCompactMode')?.checked || false,
+            chromaMode: document.getElementById('chromaMode')?.checked || false,
+            highContrastMode: document.getElementById('highContrastMode')?.checked || false,
+            performanceMode: document.getElementById('performanceMode')?.checked || false,
+            alertMode: document.getElementById('alertMode')?.checked || false,
+            transparentMode: document.getElementById('transparentMode')?.checked || false,
+            noHeaderMode: document.getElementById('noHeaderMode')?.checked || false,
+            hideButton: document.getElementById('hideButton')?.checked || false,
+            zoomLevel: document.getElementById('zoomLevel')?.value || 1,
+            autoSpinInterval: document.getElementById('autoSpinInterval')?.value || 0
+        };
+        
+        localStorage.setItem('obsSettings', JSON.stringify(settings));
+    }
+    
+    loadOBSSettings() {
+        const saved = localStorage.getItem('obsSettings');
+        if (saved) {
+            try {
+                const settings = JSON.parse(saved);
+                
+                // Apply settings to checkboxes
+                Object.keys(settings).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element && element.type === 'checkbox') {
+                        element.checked = settings[key];
+                        element.dispatchEvent(new Event('change'));
+                    } else if (element) {
+                        element.value = settings[key];
+                        element.dispatchEvent(new Event('input'));
+                        element.dispatchEvent(new Event('change'));
+                    }
+                });
+            } catch (e) {
+                console.error('Error loading OBS settings:', e);
+            }
+        }
+    }
+    
+    setAutoSpin(interval) {
+        // Clear existing interval
+        if (this.autoSpinTimer) {
+            clearInterval(this.autoSpinTimer);
+            this.autoSpinTimer = null;
+        }
+        
+        // Set new interval if greater than 0
+        if (interval > 0) {
+            this.autoSpinTimer = setInterval(() => {
+                const button = document.getElementById('spinButton');
+                if (button && !button.disabled) {
+                    this.spin();
+                }
+            }, interval * 1000);
+        }
+    }
+    
+    copyOBSUrl() {
+        // Build URL with current settings
+        const settings = [];
+        
+        if (document.getElementById('obsMode')?.checked) settings.push('obs');
+        if (document.getElementById('compactMode')?.checked) settings.push('compact');
+        if (document.getElementById('ultraCompactMode')?.checked) settings.push('ultra-compact');
+        if (document.getElementById('chromaMode')?.checked) settings.push('chroma');
+        if (document.getElementById('highContrastMode')?.checked) settings.push('high-contrast');
+        if (document.getElementById('performanceMode')?.checked) settings.push('performance');
+        if (document.getElementById('alertMode')?.checked) settings.push('alert');
+        if (document.getElementById('transparentMode')?.checked) settings.push('transparent');
+        if (document.getElementById('noHeaderMode')?.checked) settings.push('no-header');
+        
+        const hideElements = [];
+        if (document.getElementById('hideButton')?.checked) hideElements.push('button');
+        
+        const params = [];
+        if (settings.length > 0) {
+            settings.forEach(s => params.push(s));
+        }
+        
+        if (hideElements.length > 0) {
+            params.push(`hide=${hideElements.join(',')}`);
+        }
+        
+        const zoom = document.getElementById('zoomLevel')?.value;
+        if (zoom && zoom !== '1') {
+            params.push(`zoom=${zoom}`);
+        }
+        
+        const autoSpin = document.getElementById('autoSpinInterval')?.value;
+        if (autoSpin && autoSpin !== '0') {
+            params.push(`auto-spin=${autoSpin}`);
+        }
+        
+        const url = window.location.origin + window.location.pathname + 
+                   (params.length > 0 ? '?' + params.join('&') : '');
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(url).then(() => {
+            this.showCopyNotification();
+        }).catch(err => {
+            console.error('Error copying URL:', err);
+            // Fallback
+            const textArea = document.createElement('textarea');
+            textArea.value = url;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            this.showCopyNotification();
+        });
+    }
+    
+    showCopyNotification() {
+        // Create or get notification element
+        let notification = document.querySelector('.copy-notification');
+        if (!notification) {
+            notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.textContent = '¡URL copiada al portapapeles!';
+            document.body.appendChild(notification);
+        }
+        
+        // Show notification
+        notification.classList.add('show');
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
     }
 }
 

@@ -193,9 +193,10 @@ body {
     border: 2px solid var(--border-color);
     border-top: none;
     border-radius: 0 0 10px 10px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     transition: all 0.3s ease;
-    max-height: 600px;
+    max-height: 800px;
 }
 
 .config-panel.collapsed {
@@ -205,9 +206,12 @@ body {
 
 .panel-content {
     padding: 30px;
+    padding-bottom: 40px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .panel-section {
@@ -349,7 +353,10 @@ body {
     gap: 10px;
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: 20px;
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border-radius: 10px;
     grid-column: 1 / -1;
 }
 
@@ -495,6 +502,17 @@ body {
     to { transform: rotate(360deg); }
 }
 
+/* Fix for OBS settings section */
+.panel-section:has(.obs-settings) {
+    grid-column: span 2;
+}
+
+@media (max-width: 1200px) {
+    .panel-section:has(.obs-settings) {
+        grid-column: span 1;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .title {
@@ -515,6 +533,14 @@ body {
         grid-template-columns: 1fr;
         padding: 20px;
     }
+    
+    .config-panel {
+        max-height: 90vh;
+    }
+    
+    .obs-settings {
+        max-height: 300px;
+    }
 
     .modal-title {
         font-size: 36px;
@@ -523,6 +549,80 @@ body {
     .result-text {
         font-size: 28px;
     }
+}
+
+/* OBS Settings Styles */
+.obs-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    min-height: 40px;
+}
+
+.setting-item:hover {
+    background: var(--bg-secondary);
+}
+
+.setting-checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent-pink);
+    cursor: pointer;
+}
+
+.setting-range {
+    flex: 1;
+    accent-color: var(--accent-pink);
+}
+
+.setting-input {
+    width: 80px;
+    padding: 5px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 5px;
+    font-family: inherit;
+}
+
+.setting-item small {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+/* Copy URL notification */
+.copy-notification {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-cs-blue);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+.copy-notification.show {
+    opacity: 1;
 }
 
 /* Scrollbar Styles */

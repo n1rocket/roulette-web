@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/obs-optimized.css">
 </head>
 <body>
     <div class="container">
@@ -56,12 +57,69 @@
                             <ul id="history" class="history-list"></ul>
                         </div>
                         
+                        <div class="panel-section">
+                            <h3>CONFIGURACIÓN OBS</h3>
+                            <div class="obs-settings">
+                                <label class="setting-item">
+                                    <input type="checkbox" id="obsMode" class="setting-checkbox">
+                                    <span>Modo OBS</span>
+                                </label>
+                                <label class="setting-item">
+                                    <input type="checkbox" id="compactMode" class="setting-checkbox">
+                                    <span>Modo Compacto</span>
+                                </label>
+                                <label class="setting-item">
+                                    <input type="checkbox" id="ultraCompactMode" class="setting-checkbox">
+                                    <span>Ultra Compacto</span>
+                                </label>
+                                <label class="setting-item">
+                                    <input type="checkbox" id="chromaMode" class="setting-checkbox">
+                                    <span>Chroma Key (Verde)</span>
+                                </label>
+                                <label class="setting-item">
+                                    <input type="checkbox" id="highContrastMode" class="setting-checkbox">
+                                    <span>Alto Contraste</span>
+                                </label>
+                                <label class="setting-item">
+                                    <input type="checkbox" id="performanceMode" class="setting-checkbox">
+                                    <span>Modo Rendimiento</span>
+                                </label>
+                                <label class="setting-item">
+                                    <input type="checkbox" id="alertMode" class="setting-checkbox">
+                                    <span>Modo Alerta</span>
+                                </label>
+                                <label class="setting-item">
+                                    <input type="checkbox" id="transparentMode" class="setting-checkbox">
+                                    <span>Paneles Transparentes</span>
+                                </label>
+                                <label class="setting-item">
+                                    <input type="checkbox" id="noHeaderMode" class="setting-checkbox">
+                                    <span>Sin Título</span>
+                                </label>
+                                <label class="setting-item">
+                                    <input type="checkbox" id="hideButton" class="setting-checkbox">
+                                    <span>Ocultar Botón Girar</span>
+                                </label>
+                                <div class="setting-item">
+                                    <label for="zoomLevel">Zoom:</label>
+                                    <input type="range" id="zoomLevel" min="0.5" max="1.5" step="0.1" value="1" class="setting-range">
+                                    <span id="zoomValue">100%</span>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="autoSpinInterval">Auto-girar (seg):</label>
+                                    <input type="number" id="autoSpinInterval" min="0" max="300" value="0" class="setting-input">
+                                    <small>(0 = desactivado)</small>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="panel-controls">
                             <button id="toggleTheme" class="control-button" title="Cambiar tema">🌙</button>
                             <button id="toggleSound" class="control-button" title="Sonido">🔊</button>
                             <button id="toggleTournament" class="control-button" title="Modo torneo">🏆</button>
                             <button id="exportConfig" class="control-button" title="Exportar">💾</button>
                             <button id="importConfig" class="control-button" title="Importar">📁</button>
+                            <button id="copyOBSUrl" class="control-button" title="Copiar URL para OBS">🔗</button>
                         </div>
                     </div>
                 </div>
@@ -94,6 +152,8 @@
 
     <script src="js/config.js"></script>
     <script src="js/roulette.js"></script>
+    <script src="js/particles.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/obs-helper.js"></script>
 </body>
 </html>
