@@ -775,6 +775,160 @@ body {
     }
 }
 
+/* Streamlabs Integration */
+.streamlabs-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.streamlabs-status {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.streamlabs-button {
+    padding: 10px 20px;
+    background: var(--bg-primary);
+    border: 2px solid var(--accent-red);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.streamlabs-button:hover {
+    background: var(--accent-red);
+    color: white;
+}
+
+.streamlabs-button.connected {
+    border-color: #51cf66;
+    color: #51cf66;
+}
+
+.streamlabs-input {
+    flex: 1;
+    padding: 10px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.streamlabs-triggers h4,
+.streamlabs-test h4 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.trigger-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.trigger-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.min-input {
+    width: 60px;
+    padding: 4px 8px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.test-button {
+    padding: 8px 16px;
+    background: var(--accent-purple);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-right: 10px;
+}
+
+.test-button:hover {
+    background: var(--accent-pink);
+}
+
+/* Streamlabs Notifications */
+.streamlabs-notifications {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+.streamlabs-notification {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 15px;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.3s ease;
+}
+
+.streamlabs-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.streamlabs-notification.donation {
+    border-color: #f1c40f;
+    box-shadow: 0 0 20px rgba(241, 196, 15, 0.3);
+}
+
+.streamlabs-notification.subscription {
+    border-color: #9b59b6;
+    box-shadow: 0 0 20px rgba(155, 89, 182, 0.3);
+}
+
+.streamlabs-notification.bits {
+    border-color: #3498db;
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+}
+
+.streamlabs-notification.raid {
+    border-color: #e74c3c;
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notification-icon {
+    font-size: 24px;
+}
+
+.notification-message {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .title {

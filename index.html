@@ -172,6 +172,42 @@
                             </div>
                         </div>
                         
+                        <div class="panel-section">
+                            <h3>STREAMLABS</h3>
+                            <div class="streamlabs-settings">
+                                <div class="streamlabs-status">
+                                    <button id="streamlabsConnect" class="streamlabs-button">🔴 Conectar</button>
+                                    <input type="password" id="streamlabsToken" placeholder="Socket API Token" class="streamlabs-input" style="display: none;">
+                                </div>
+                                
+                                <div class="streamlabs-triggers">
+                                    <h4>Triggers Automáticos</h4>
+                                    <label class="trigger-item">
+                                        <input type="checkbox" id="triggerDonation" checked>
+                                        <span>Donaciones (min: $<input type="number" id="minDonation" value="5" min="1" class="min-input">)</span>
+                                    </label>
+                                    <label class="trigger-item">
+                                        <input type="checkbox" id="triggerSubscription" checked>
+                                        <span>Suscripciones</span>
+                                    </label>
+                                    <label class="trigger-item">
+                                        <input type="checkbox" id="triggerBits" checked>
+                                        <span>Bits (min: <input type="number" id="minBits" value="100" min="1" class="min-input">)</span>
+                                    </label>
+                                    <label class="trigger-item">
+                                        <input type="checkbox" id="triggerRaid" checked>
+                                        <span>Raids (min: <input type="number" id="minRaiders" value="10" min="1" class="min-input"> viewers)</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="streamlabs-test">
+                                    <h4>Pruebas</h4>
+                                    <button id="testDonation" class="test-button">Probar Donación</button>
+                                    <button id="testSubscription" class="test-button">Probar Sub</button>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="panel-controls">
                             <button id="toggleTheme" class="control-button" title="Cambiar tema">🌙</button>
                             <button id="toggleSound" class="control-button" title="Sonido">🔊</button>
@@ -214,6 +250,7 @@
     <script src="js/roulette.js"></script>
     <script src="js/particles.js"></script>
     <script src="js/charts.js"></script>
+    <script src="js/streamlabs.js"></script>
     <script src="js/app.js"></script>
     <script src="js/obs-helper.js"></script>
 </body>

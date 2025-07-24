@@ -38,6 +38,9 @@ class App {
             this.chartManager = new ChartManager(chartCanvas, this.config);
         }
         
+        // Initialize Streamlabs integration
+        this.streamlabs = new StreamlabsIntegration(this);
+        
         console.log('App initialized with options:', this.config.options);
     }
 
@@ -75,6 +78,9 @@ class App {
         
         // Keyboard shortcuts
         this.setupKeyboardShortcuts();
+        
+        // Streamlabs listeners
+        this.setupStreamlabsListeners();
         
         document.getElementById('importFile').addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -703,6 +709,78 @@ class App {
         } else {
             console.log('Auto-spin disabled');
         }
+    }
+    
+    setupStreamlabsListeners() {
+        const connectButton = document.getElementById('streamlabsConnect');
+        const tokenInput = document.getElementById('streamlabsToken');
+        
+        if (connectButton) {
+            connectButton.addEventListener('click', () => {
+                if (this.streamlabs.connected) {
+                    this.streamlabs.disconnect();
+                } else {
+                    // Show token input
+                    tokenInput.style.display = tokenInput.style.display === 'none' ? 'block' : 'none';
+                    if (tokenInput.style.display === 'block') {
+                        tokenInput.focus();
+                    }
+                }
+            });
+        }
+        
+        if (tokenInput) {
+            tokenInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && tokenInput.value) {
+                    this.streamlabs.connect(tokenInput.value);
+                    tokenInput.style.display = 'none';
+                    tokenInput.value = '';
+                }
+            });
+        }
+        
+        // Test buttons
+        const testDonation = document.getElementById('testDonation');
+        const testSub = document.getElementById('testSubscription');
+        
+        if (testDonation) {
+            testDonation.addEventListener('click', () => this.streamlabs.testDonation());
+        }
+        
+        if (testSub) {
+            testSub.addEventListener('click', () => this.streamlabs.testSubscription());
+        }
+        
+        // Trigger settings
+        const triggers = ['Donation', 'Subscription', 'Bits', 'Raid'];
+        triggers.forEach(trigger => {
+            const checkbox = document.getElementById(`trigger${trigger}`);
+            if (checkbox) {
+                checkbox.addEventListener('change', (e) => {
+                    const triggerKey = trigger.toLowerCase();
+                    this.streamlabs.settings.triggers[triggerKey].enabled = e.target.checked;
+                    this.streamlabs.saveSettings();
+                });
+            }
+        });
+        
+        // Min amount inputs
+        const minInputs = {
+            'minDonation': 'donation.minAmount',
+            'minBits': 'bits.minBits',
+            'minRaiders': 'raid.minViewers'
+        };
+        
+        Object.keys(minInputs).forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.addEventListener('change', (e) => {
+                    const path = minInputs[inputId].split('.');
+                    this.streamlabs.settings.triggers[path[0]][path[1]] = parseInt(e.target.value) || 1;
+                    this.streamlabs.saveSettings();
+                });
+            }
+        });
     }
     
     copyOBSUrl() {
