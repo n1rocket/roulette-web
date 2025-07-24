@@ -28,6 +28,9 @@ class App {
         // Initialize preset manager
         this.presetManager = new PresetManager(this.config);
         
+        // Initialize auto-spin
+        this.autoSpinInterval = null;
+        
         console.log('App initialized with options:', this.config.options);
     }
 
@@ -57,6 +60,9 @@ class App {
         
         // OBS Settings listeners
         this.setupOBSSettingsListeners();
+        
+        // Keyboard shortcuts
+        this.setupKeyboardShortcuts();
         
         document.getElementById('importFile').addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -188,6 +194,70 @@ class App {
         this.renderDetailedStats();
     }
     
+    renderDetailedStats() {
+        const container = document.getElementById('optionStats');
+        container.innerHTML = '';
+        
+        const totalSpins = this.config.statistics.totalSpins;
+        if (totalSpins === 0) {
+            container.innerHTML = '<div class="no-stats">No hay estadísticas aún</div>';
+            return;
+        }
+        
+        // Calculate stats for each option
+        const optionStats = this.config.options.map(option => {
+            const count = this.config.statistics.optionCounts[option.text] || 0;
+            const percentage = totalSpins > 0 ? (count / totalSpins * 100).toFixed(1) : 0;
+            const expectedPercentage = this.calculateExpectedPercentage(option);
+            const difference = (percentage - expectedPercentage).toFixed(1);
+            
+            return {
+                text: option.text,
+                count: count,
+                percentage: percentage,
+                expected: expectedPercentage,
+                difference: difference,
+                color: option.color
+            };
+        });
+        
+        // Sort by count descending
+        optionStats.sort((a, b) => b.count - a.count);
+        
+        // Render stats
+        optionStats.forEach(stat => {
+            const div = document.createElement('div');
+            div.className = 'option-stat-item';
+            
+            const diffClass = stat.difference > 0 ? 'positive' : stat.difference < 0 ? 'negative' : '';
+            const diffSymbol = stat.difference > 0 ? '+' : '';
+            
+            div.innerHTML = `
+                <div class="stat-header">
+                    <span class="stat-color" style="background-color: ${stat.color}"></span>
+                    <span class="stat-name">${stat.text}</span>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-count">${stat.count} veces</span>
+                    <span class="stat-percentage">${stat.percentage}%</span>
+                    <span class="stat-expected">(esperado: ${stat.expected}%)</span>
+                    <span class="stat-diff ${diffClass}">${diffSymbol}${stat.difference}%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" style="width: ${stat.percentage}%; background-color: ${stat.color}"></div>
+                </div>
+            `;
+            
+            container.appendChild(div);
+        });
+    }
+    
+    calculateExpectedPercentage(option) {
+        const availableOptions = this.config.getAvailableOptions();
+        const totalWeight = availableOptions.reduce((sum, opt) => sum + opt.weight, 0);
+        return totalWeight > 0 ? (option.weight / totalWeight * 100).toFixed(1) : 0;
+    }
+    
     getMostFrequentOption() {
         const counts = this.config.statistics.optionCounts;
         let maxCount = 0;
@@ -296,18 +366,13 @@ class App {
     }
 
     toggleTheme() {
-        const body = document.body;
-        const button = document.getElementById('toggleTheme');
+        const themes = ['dark', 'light', 'harley', 'cs2', 'neon', 'retro'];
+        const currentIndex = themes.indexOf(this.config.theme);
+        const nextIndex = (currentIndex + 1) % themes.length;
+        const nextTheme = themes[nextIndex];
         
-        if (body.classList.contains('light-theme')) {
-            body.classList.remove('light-theme');
-            button.textContent = '🌙';
-            this.config.setTheme('dark');
-        } else {
-            body.classList.add('light-theme');
-            button.textContent = '☀️';
-            this.config.setTheme('light');
-        }
+        this.config.setTheme(nextTheme);
+        this.applyTheme();
     }
 
     toggleSound() {
@@ -332,9 +397,34 @@ class App {
     }
 
     applyTheme() {
-        if (this.config.theme === 'light') {
-            document.body.classList.add('light-theme');
-            document.getElementById('toggleTheme').textContent = '☀️';
+        // Remove all theme classes
+        document.body.classList.remove('light-theme', 'dark-theme', 'harley-theme', 'cs2-theme', 'neon-theme', 'retro-theme');
+        
+        // Apply current theme
+        switch(this.config.theme) {
+            case 'light':
+                document.body.classList.add('light-theme');
+                document.getElementById('toggleTheme').textContent = '☀️';
+                break;
+            case 'harley':
+                document.body.classList.add('harley-theme');
+                document.getElementById('toggleTheme').textContent = '🃏';
+                break;
+            case 'cs2':
+                document.body.classList.add('cs2-theme');
+                document.getElementById('toggleTheme').textContent = '🔫';
+                break;
+            case 'neon':
+                document.body.classList.add('neon-theme');
+                document.getElementById('toggleTheme').textContent = '💜';
+                break;
+            case 'retro':
+                document.body.classList.add('retro-theme');
+                document.getElementById('toggleTheme').textContent = '🕹️';
+                break;
+            default:
+                document.body.classList.add('dark-theme');
+                document.getElementById('toggleTheme').textContent = '🌙';
         }
         
         if (!this.config.soundEnabled) {
@@ -402,6 +492,57 @@ class App {
     closeModal() {
         const modal = document.getElementById('resultModal');
         modal.classList.remove('show');
+    }
+    
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Ignore if user is typing in an input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            // Space or Enter to spin
+            if (e.code === 'Space' || e.code === 'Enter') {
+                e.preventDefault();
+                const spinButton = document.getElementById('spinButton');
+                if (!spinButton.disabled) {
+                    this.spin();
+                }
+            }
+            
+            // R to reset stats
+            if (e.code === 'KeyR' && e.ctrlKey) {
+                e.preventDefault();
+                if (confirm('¿Resetear todas las estadísticas?')) {
+                    this.resetStatistics();
+                }
+            }
+            
+            // C to toggle config panel
+            if (e.code === 'KeyC') {
+                this.toggleConfigPanel();
+            }
+            
+            // T to toggle theme
+            if (e.code === 'KeyT') {
+                this.toggleTheme();
+            }
+            
+            // S to toggle sound
+            if (e.code === 'KeyS') {
+                this.toggleSound();
+            }
+            
+            // M to toggle tournament mode
+            if (e.code === 'KeyM') {
+                this.toggleTournament();
+            }
+            
+            // Escape to close modal
+            if (e.code === 'Escape') {
+                this.closeModal();
+            }
+        });
     }
     
     setupOBSSettingsListeners() {
@@ -529,6 +670,28 @@ class App {
                     this.spin();
                 }
             }, interval * 1000);
+        }
+    }
+    
+    setAutoSpin(seconds) {
+        // Clear existing interval
+        if (this.autoSpinInterval) {
+            clearInterval(this.autoSpinInterval);
+            this.autoSpinInterval = null;
+        }
+        
+        // Set new interval if seconds > 0
+        if (seconds > 0) {
+            console.log(`Auto-spin enabled: ${seconds} seconds`);
+            this.autoSpinInterval = setInterval(() => {
+                const button = document.getElementById('spinButton');
+                if (button && !button.disabled && !this.roulette.isSpinning) {
+                    console.log('Auto-spinning...');
+                    this.spin();
+                }
+            }, seconds * 1000);
+        } else {
+            console.log('Auto-spin disabled');
         }
     }
     

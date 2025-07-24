@@ -179,12 +179,20 @@ class Roulette {
         }
         
         const result = this.selectedResult;
+        
+        // Stop spin sound
+        const spinSound = document.getElementById('spinSound');
+        if (spinSound) {
+            spinSound.pause();
+            spinSound.currentTime = 0;
+        }
 
+        // Play win sound
         if (this.config.soundEnabled) {
             const winSound = document.getElementById('winSound');
             if (winSound) {
                 winSound.volume = this.config.soundVolume;
-                winSound.play().catch(e => console.log('Error playing sound:', e));
+                winSound.play().catch(e => console.log('Error playing win sound:', e));
             }
         }
 

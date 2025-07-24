@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Sonidos para Ruleta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        h1 { color: #ff1493; }
+        button {
+            background: #ff1493;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover { background: #ff69b4; }
+        .info {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .sound-links {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        a {
+            color: #ff7b00;
+            text-decoration: none;
+            display: block;
+            margin: 10px 0;
+        }
+        a:hover { color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <h1>Generador de Sonidos para la Ruleta</h1>
+    
+    <div class="info">
+        <h2>Opción 1: Generar Sonidos Sintéticos</h2>
+        <p>Estos botones generarán sonidos básicos usando Web Audio API:</p>
+        <button onclick="generateSpinSound()">Generar Sonido de Giro</button>
+        <button onclick="generateWinSound()">Generar Sonido de Victoria</button>
+        <button onclick="playSpinSound()">Probar Sonido de Giro</button>
+        <button onclick="playWinSound()">Probar Sonido de Victoria</button>
+    </div>
+
+    <div class="sound-links">
+        <h2>Opción 2: Sitios de Sonidos Gratuitos</h2>
+        <p>Puedes descargar sonidos gratuitos de estos sitios:</p>
+        
+        <h3>Para el sonido de giro (spin.mp3):</h3>
+        <a href="https://freesound.org/search/?q=wheel+spin" target="_blank">
+            🔊 Freesound - Wheel Spin (requiere cuenta gratuita)
+        </a>
+        <a href="https://www.zapsplat.com/search/?s=wheel+spin&post_type=music&sound-effect-category-id=" target="_blank">
+            🔊 Zapsplat - Wheel Spin (requiere cuenta gratuita)
+        </a>
+        <a href="https://soundbible.com/search.php?q=spin" target="_blank">
+            🔊 SoundBible - Spin Sounds
+        </a>
+        
+        <h3>Para el sonido de victoria (win.mp3):</h3>
+        <a href="https://freesound.org/search/?q=win+sound+game" target="_blank">
+            🔊 Freesound - Win Sounds
+        </a>
+        <a href="https://www.zapsplat.com/search/?s=win+game&post_type=music&sound-effect-category-id=" target="_blank">
+            🔊 Zapsplat - Game Win
+        </a>
+        <a href="https://soundbible.com/search.php?q=win" target="_blank">
+            🔊 SoundBible - Win Sounds
+        </a>
+        
+        <h3>Búsquedas recomendadas:</h3>
+        <ul>
+            <li>Para spin: "wheel spin", "roulette spin", "spinning wheel", "casino wheel"</li>
+            <li>Para win: "win sound", "victory fanfare", "success sound", "achievement sound"</li>
+        </ul>
+    </div>
+
+    <div class="info">
+        <h2>Instrucciones:</h2>
+        <ol>
+            <li>Opción 1: Usa los botones para generar sonidos sintéticos básicos</li>
+            <li>Opción 2: Visita los sitios recomendados y descarga sonidos profesionales</li>
+            <li>Renombra los archivos descargados a <code>spin.mp3</code> y <code>win.mp3</code></li>
+            <li>Colócalos en la carpeta <code>assets/sounds/</code></li>
+        </ol>
+    </div>
+
+    <script>
+        // Audio context for generating sounds
+        let audioContext;
+
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function generateSpinSound() {
+            initAudioContext();
+            
+            // Create a more complex spinning sound
+            const duration = 3;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < buffer.length; i++) {
+                // Create a clicking/ticking sound that speeds up and slows down
+                const t = i / sampleRate;
+                const clickRate = 10 * (1 + Math.sin(t * 2)); // Variable click rate
+                const click = Math.sin(2 * Math.PI * clickRate * t) * Math.exp(-t * 0.5);
+                const noise = (Math.random() - 0.5) * 0.1 * Math.exp(-t * 0.3);
+                data[i] = click * 0.3 + noise;
+            }
+            
+            // Convert to WAV and download
+            const wav = audioBufferToWav(buffer);
+            downloadBlob(wav, 'spin.wav');
+            alert('Sonido de giro generado! Conviértelo a MP3 con un conversor online.');
+        }
+
+        function generateWinSound() {
+            initAudioContext();
+            
+            // Create a victory fanfare sound
+            const duration = 1.5;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            // Victory chord progression
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C, E, G, C (higher)
+            
+            for (let i = 0; i < buffer.length; i++) {
+                const t = i / sampleRate;
+                let sample = 0;
+                
+                // Add each note of the chord
+                for (let j = 0; j < notes.length; j++) {
+                    const noteDelay = j * 0.1;
+                    if (t > noteDelay) {
+                        const noteTime = t - noteDelay;
+                        const envelope = Math.exp(-noteTime * 2) * 0.3;
+                        sample += Math.sin(2 * Math.PI * notes[j] * noteTime) * envelope;
+                    }
+                }
+                
+                // Add some sparkle
+                sample += Math.sin(2 * Math.PI * 2000 * t) * Math.exp(-t * 4) * 0.1;
+                
+                data[i] = sample;
+            }
+            
+            // Convert to WAV and download
+            const wav = audioBufferToWav(buffer);
+            downloadBlob(wav, 'win.wav');
+            alert('Sonido de victoria generado! Conviértelo a MP3 con un conversor online.');
+        }
+
+        function playSpinSound() {
+            initAudioContext();
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(100, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.5);
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 3);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 3);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 3);
+        }
+
+        function playWinSound() {
+            initAudioContext();
+            
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            
+            notes.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = freq;
+                
+                const startTime = audioContext.currentTime + index * 0.1;
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 1);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 1);
+            });
+        }
+
+        // Helper functions for WAV export
+        function audioBufferToWav(buffer) {
+            const length = buffer.length * buffer.numberOfChannels * 2 + 44;
+            const arrayBuffer = new ArrayBuffer(length);
+            const view = new DataView(arrayBuffer);
+            const channels = [];
+            let offset = 0;
+            let pos = 0;
+
+            // write WAVE header
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // file length - 8
+            setUint32(0x45564157); // "WAVE"
+
+            setUint32(0x20746d66); // "fmt " chunk
+            setUint32(16); // length = 16
+            setUint16(1); // PCM (uncompressed)
+            setUint16(buffer.numberOfChannels);
+            setUint32(buffer.sampleRate);
+            setUint32(buffer.sampleRate * 2 * buffer.numberOfChannels); // avg. bytes/sec
+            setUint16(buffer.numberOfChannels * 2); // block-align
+            setUint16(16); // 16-bit (hardcoded in this demo)
+
+            setUint32(0x61746164); // "data" - chunk
+            setUint32(length - pos - 4); // chunk length
+
+            // write interleaved data
+            for (let i = 0; i < buffer.numberOfChannels; i++)
+                channels.push(buffer.getChannelData(i));
+
+            while (pos < length) {
+                for (let i = 0; i < buffer.numberOfChannels; i++) { // interleave channels
+                    let sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+                    sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF; // scale to 16-bit signed int
+                    view.setInt16(pos, sample, true); // write 16-bit sample
+                    pos += 2;
+                }
+                offset++; // next source sample
+            }
+
+            return new Blob([arrayBuffer], { type: 'audio/wav' });
+
+            function setUint16(data) {
+                view.setUint16(pos, data, true);
+                pos += 2;
+            }
+
+            function setUint32(data) {
+                view.setUint32(pos, data, true);
+                pos += 4;
+            }
+        }
+
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
