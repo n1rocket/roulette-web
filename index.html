@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS2 Roulette - Harley Quinn Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">CS2 ROULETTE</h1>
+            <div class="subtitle">HARLEY QUINN EDITION</div>
+        </header>
+
+        <main class="main-content">
+            <div class="roulette-container">
+                <div class="roulette-wrapper">
+                    <canvas id="roulette" width="600" height="600"></canvas>
+                    <div class="pointer"></div>
+                </div>
+                <button id="spinButton" class="spin-button">SPIN IT!</button>
+            </div>
+
+            <aside class="sidebar">
+                <div class="panel config-panel">
+                    <h2>OPCIONES</h2>
+                    <div id="optionsList" class="options-list"></div>
+                    <button id="addOption" class="add-button">+ AÑADIR</button>
+                </div>
+
+                <div class="panel stats-panel">
+                    <h2>ESTADÍSTICAS</h2>
+                    <div id="stats" class="stats">
+                        <div class="stat">
+                            <span class="stat-label">Total Spins:</span>
+                            <span id="totalSpins" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel history-panel">
+                    <h2>HISTORIAL</h2>
+                    <ul id="history" class="history-list"></ul>
+                </div>
+            </aside>
+        </main>
+
+        <footer class="controls">
+            <button id="toggleTheme" class="control-button">🌙</button>
+            <button id="toggleSound" class="control-button">🔊</button>
+            <button id="exportConfig" class="control-button">💾</button>
+            <button id="importConfig" class="control-button">📁</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
+        </footer>
+    </div>
+
+    <audio id="spinSound" src="assets/sounds/spin.mp3" preload="auto"></audio>
+    <audio id="winSound" src="assets/sounds/win.mp3" preload="auto"></audio>
+
+    <script src="js/config.js"></script>
+    <script src="js/roulette.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
