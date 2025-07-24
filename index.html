@@ -38,6 +38,22 @@
                     <div class="panel-content">
                         <div class="panel-section">
                             <h3>OPCIONES</h3>
+                            <div class="preset-selector">
+                                <select id="presetSelect" class="preset-dropdown">
+                                    <option value="">-- Seleccionar Preset --</option>
+                                    <option value="cs2">Counter-Strike 2</option>
+                                    <option value="valorant">Valorant</option>
+                                    <option value="fortnite">Fortnite</option>
+                                    <option value="apex">Apex Legends</option>
+                                    <option value="lol">League of Legends</option>
+                                    <option value="streaming">Streaming</option>
+                                    <option value="challenges">Retos</option>
+                                    <option value="decisions">Decisiones</option>
+                                    <option value="minecraft">Minecraft</option>
+                                    <option value="gta">GTA Roleplay</option>
+                                </select>
+                                <button id="loadPreset" class="preset-button">Cargar</button>
+                            </div>
                             <div id="optionsList" class="options-list"></div>
                             <button id="addOption" class="add-button">+ AÑADIR OPCIÓN</button>
                         </div>
@@ -49,6 +65,27 @@
                                     <span class="stat-label">Total Spins:</span>
                                     <span id="totalSpins" class="stat-value">0</span>
                                 </div>
+                                <div class="stat">
+                                    <span class="stat-label">Sesión actual:</span>
+                                    <span id="sessionSpins" class="stat-value">0</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Última opción:</span>
+                                    <span id="lastResult" class="stat-value">-</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Más frecuente:</span>
+                                    <span id="mostFrequent" class="stat-value">-</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Racha actual:</span>
+                                    <span id="currentStreak" class="stat-value">0</span>
+                                </div>
+                            </div>
+                            <button id="resetStats" class="reset-stats-button">Resetear Estadísticas</button>
+                            <div class="stats-details">
+                                <h4>Detalle por Opción</h4>
+                                <div id="optionStats" class="option-stats"></div>
                             </div>
                         </div>
                         
@@ -151,6 +188,7 @@
     <audio id="winSound" src="assets/sounds/win.mp3" preload="auto"></audio>
 
     <script src="js/config.js"></script>
+    <script src="js/presets.js"></script>
     <script src="js/roulette.js"></script>
     <script src="js/particles.js"></script>
     <script src="js/app.js"></script>

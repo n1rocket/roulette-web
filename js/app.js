@@ -2,6 +2,9 @@ class App {
     constructor() {
         this.config = new Config();
         this.roulette = null;
+        this.presetManager = null;
+        this.sessionSpins = 0;
+        this.currentStreak = { option: null, count: 0 };
         this.init();
     }
 
@@ -22,6 +25,9 @@ class App {
         this.renderHistory();
         this.applyTheme();
         
+        // Initialize preset manager
+        this.presetManager = new PresetManager(this.config);
+        
         console.log('App initialized with options:', this.config.options);
     }
 
@@ -33,9 +39,21 @@ class App {
         document.getElementById('toggleTournament').addEventListener('click', () => this.toggleTournament());
         document.getElementById('exportConfig').addEventListener('click', () => this.exportConfig());
         document.getElementById('importConfig').addEventListener('click', () => this.importConfig());
-        document.getElementById('toggleConfig').addEventListener('click', () => this.toggleConfigPanel());
+        
+        const toggleButton = document.getElementById('toggleConfig');
+        if (toggleButton) {
+            toggleButton.addEventListener('click', () => {
+                console.log('Config button clicked');
+                this.toggleConfigPanel();
+            });
+        } else {
+            console.error('Toggle config button not found!');
+        }
+        
         document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
         document.getElementById('copyOBSUrl').addEventListener('click', () => this.copyOBSUrl());
+        document.getElementById('loadPreset').addEventListener('click', () => this.loadPreset());
+        document.getElementById('resetStats').addEventListener('click', () => this.resetStatistics());
         
         // OBS Settings listeners
         this.setupOBSSettingsListeners();
@@ -75,6 +93,8 @@ class App {
             
             if (result) {
                 this.config.recordSpin(result);
+                this.sessionSpins++;
+                this.updateStreak(result);
                 this.updateStats();
                 this.renderHistory();
                 
@@ -148,7 +168,111 @@ class App {
     }
 
     updateStats() {
+        // Basic stats
         document.getElementById('totalSpins').textContent = this.config.statistics.totalSpins;
+        document.getElementById('sessionSpins').textContent = this.sessionSpins;
+        
+        // Last result
+        const lastResult = this.config.history.length > 0 ? this.config.history[0].result : '-';
+        document.getElementById('lastResult').textContent = lastResult;
+        
+        // Most frequent
+        const mostFrequent = this.getMostFrequentOption();
+        document.getElementById('mostFrequent').textContent = mostFrequent || '-';
+        
+        // Current streak
+        document.getElementById('currentStreak').textContent = 
+            this.currentStreak.count > 1 ? `${this.currentStreak.option} x${this.currentStreak.count}` : '0';
+        
+        // Detailed stats
+        this.renderDetailedStats();
+    }
+    
+    getMostFrequentOption() {
+        const counts = this.config.statistics.optionCounts;
+        let maxCount = 0;
+        let mostFrequent = null;
+        
+        for (const [option, count] of Object.entries(counts)) {
+            if (count > maxCount) {
+                maxCount = count;
+                mostFrequent = option;
+            }
+        }
+        
+        return mostFrequent;
+    }
+    
+    updateStreak(result) {
+        if (this.currentStreak.option === result) {
+            this.currentStreak.count++;
+        } else {
+            this.currentStreak.option = result;
+            this.currentStreak.count = 1;
+        }
+    }
+    
+    renderDetailedStats() {
+        const container = document.getElementById('optionStats');
+        container.innerHTML = '';
+        
+        const totalSpins = this.config.statistics.totalSpins;
+        if (totalSpins === 0) return;
+        
+        // Get all options with their counts
+        const optionData = [];
+        this.config.options.forEach(option => {
+            const count = this.config.statistics.optionCounts[option.text] || 0;
+            const percentage = ((count / totalSpins) * 100).toFixed(1);
+            const expectedPercentage = this.calculateExpectedPercentage(option.text);
+            
+            optionData.push({
+                name: option.text,
+                count: count,
+                percentage: percentage,
+                expectedPercentage: expectedPercentage
+            });
+        });
+        
+        // Sort by count
+        optionData.sort((a, b) => b.count - a.count);
+        
+        // Render
+        optionData.forEach(data => {
+            const item = document.createElement('div');
+            item.className = 'option-stat-item';
+            
+            const diff = data.percentage - data.expectedPercentage;
+            const diffColor = diff > 5 ? '#00ff00' : (diff < -5 ? '#ff0000' : '#ffff00');
+            
+            item.innerHTML = `
+                <span class="option-stat-name">${data.name}</span>
+                <span class="option-stat-count">${data.count}</span>
+                <span class="option-stat-percentage" style="color: ${diffColor}">${data.percentage}%</span>
+            `;
+            
+            container.appendChild(item);
+        });
+    }
+    
+    calculateExpectedPercentage(optionText) {
+        const option = this.config.options.find(o => o.text === optionText);
+        if (!option) return 0;
+        
+        const totalWeight = this.config.options.reduce((sum, opt) => sum + opt.weight, 0);
+        return ((option.weight / totalWeight) * 100).toFixed(1);
+    }
+    
+    resetStatistics() {
+        if (confirm('¿Resetear todas las estadísticas?')) {
+            this.config.statistics = { totalSpins: 0, optionCounts: {} };
+            this.config.history = [];
+            this.sessionSpins = 0;
+            this.currentStreak = { option: null, count: 0 };
+            this.config.saveToLocalStorage();
+            this.updateStats();
+            this.renderHistory();
+        }
     }
 
     renderHistory() {
@@ -226,6 +350,8 @@ class App {
         const panel = document.getElementById('configPanel');
         const icon = document.querySelector('.toggle-icon');
         
+        console.log('Toggle config panel - Current state:', panel.classList.contains('collapsed'));
+        
         panel.classList.toggle('collapsed');
         
         if (panel.classList.contains('collapsed')) {
@@ -233,6 +359,8 @@ class App {
         } else {
             icon.style.transform = 'rotate(180deg)';
         }
+        
+        console.log('Toggle config panel - New state:', panel.classList.contains('collapsed'));
     }
     
     toggleTournament() {
@@ -476,6 +604,60 @@ class App {
         setTimeout(() => {
             notification.classList.remove('show');
         }, 3000);
+    }
+    
+    loadPreset() {
+        const select = document.getElementById('presetSelect');
+        const presetName = select.value;
+        
+        if (!presetName) {
+            alert('Por favor selecciona un preset');
+            return;
+        }
+        
+        if (this.presetManager.loadPreset(presetName)) {
+            // Update UI
+            this.renderOptions();
+            this.roulette.draw();
+            
+            // Show notification
+            this.showPresetNotification(`Preset "${select.options[select.selectedIndex].text}" cargado`);
+            
+            // Reset select
+            select.value = '';
+        } else {
+            alert('Error al cargar el preset');
+        }
+    }
+    
+    showPresetNotification(message) {
+        let notification = document.querySelector('.preset-notification');
+        if (!notification) {
+            notification = document.createElement('div');
+            notification.className = 'preset-notification';
+            document.body.appendChild(notification);
+        }
+        
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-purple);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            opacity: 1;
+            transition: opacity 0.3s;
+            z-index: 1001;
+        `;
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 2000);
     }
 }
 

@@ -11,6 +11,9 @@ class OBSHelper {
         // Check URL parameters for OBS settings
         this.obsMode = this.urlParams.has('obs') || this.urlParams.get('mode') === 'obs';
         
+        // TEMPORARILY DISABLED - Remove this line to enable OBS mode detection
+        this.obsMode = false;
+        
         if (this.obsMode) {
             document.body.classList.add('obs-mode');
             this.applyOBSSettings();
@@ -229,4 +232,8 @@ class OBSHelper {
 let obsHelper;
 document.addEventListener('DOMContentLoaded', () => {
     obsHelper = new OBSHelper();
+    
+    // Asegurarse de que el modo OBS esté desactivado
+    document.body.classList.remove('obs-mode');
+    console.log('OBS mode removed, config button should be visible');
 });

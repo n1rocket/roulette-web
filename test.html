@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Ruleta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        #console {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        .info { color: #74c0fc; }
+    </style>
+</head>
+<body>
+    <h1>Test de Carga de la Ruleta</h1>
+    <div id="status">Cargando...</div>
+    <div id="console"></div>
+
+    <script>
+        const log = (message, type = 'info') => {
+            const console = document.getElementById('console');
+            const span = document.createElement('span');
+            span.className = type;
+            span.textContent = `[${new Date().toLocaleTimeString()}] ${message}\n`;
+            console.appendChild(span);
+            console.scrollTop = console.scrollHeight;
+        };
+
+        window.onerror = (msg, url, lineNo, columnNo, error) => {
+            log(`ERROR: ${msg} at ${url}:${lineNo}:${columnNo}`, 'error');
+            return false;
+        };
+
+        log('Iniciando prueba de carga...', 'info');
+    </script>
+
+    <!-- Cargar scripts en orden -->
+    <script src="js/config.js"></script>
+    <script>
+        if (typeof Config !== 'undefined') {
+            log('✓ config.js cargado correctamente', 'success');
+            try {
+                const testConfig = new Config();
+                log(`✓ Config creado. Opciones: ${testConfig.options.length}`, 'success');
+            } catch (e) {
+                log(`✗ Error al crear Config: ${e.message}`, 'error');
+            }
+        } else {
+            log('✗ config.js no se cargó', 'error');
+        }
+    </script>
+
+    <script src="js/presets.js"></script>
+    <script>
+        if (typeof PresetManager !== 'undefined') {
+            log('✓ presets.js cargado correctamente', 'success');
+        } else {
+            log('✗ presets.js no se cargó', 'error');
+        }
+    </script>
+
+    <script src="js/roulette.js"></script>
+    <script>
+        if (typeof Roulette !== 'undefined') {
+            log('✓ roulette.js cargado correctamente', 'success');
+        } else {
+            log('✗ roulette.js no se cargó', 'error');
+        }
+    </script>
+
+    <script src="js/particles.js"></script>
+    <script>
+        if (typeof ParticleSystem !== 'undefined') {
+            log('✓ particles.js cargado correctamente', 'success');
+        } else {
+            log('✗ particles.js no se cargó', 'error');
+        }
+    </script>
+
+    <script src="js/app.js"></script>
+    <script>
+        if (typeof App !== 'undefined') {
+            log('✓ app.js cargado correctamente', 'success');
+            log('Intentando crear instancia de App...', 'info');
+            
+            // Crear un canvas de prueba
+            const canvas = document.createElement('canvas');
+            canvas.id = 'roulette';
+            canvas.width = 600;
+            canvas.height = 600;
+            document.body.appendChild(canvas);
+            
+            // Crear elementos necesarios
+            const elements = [
+                { id: 'spinButton', type: 'button', text: 'SPIN' },
+                { id: 'optionsList', type: 'div' },
+                { id: 'toggleConfig', type: 'button', text: 'CONFIG' },
+                { id: 'configPanel', type: 'div', class: 'collapsed' },
+                { id: 'addOption', type: 'button' },
+                { id: 'toggleTheme', type: 'button' },
+                { id: 'toggleSound', type: 'button' },
+                { id: 'toggleTournament', type: 'button' },
+                { id: 'exportConfig', type: 'button' },
+                { id: 'importConfig', type: 'button' },
+                { id: 'closeModal', type: 'button' },
+                { id: 'copyOBSUrl', type: 'button' },
+                { id: 'loadPreset', type: 'button' },
+                { id: 'resetStats', type: 'button' },
+                { id: 'importFile', type: 'input' },
+                { id: 'totalSpins', type: 'span' },
+                { id: 'sessionSpins', type: 'span' },
+                { id: 'lastResult', type: 'span' },
+                { id: 'mostFrequent', type: 'span' },
+                { id: 'currentStreak', type: 'span' },
+                { id: 'optionStats', type: 'div' },
+                { id: 'history', type: 'ul' },
+                { id: 'resultModal', type: 'div' },
+                { id: 'resultText', type: 'div' }
+            ];
+
+            elements.forEach(el => {
+                const element = document.createElement(el.type);
+                element.id = el.id;
+                if (el.text) element.textContent = el.text;
+                if (el.class) element.className = el.class;
+                element.style.display = 'none';
+                document.body.appendChild(element);
+            });
+
+            log('Elementos DOM creados', 'info');
+
+            try {
+                window.app = new App();
+                log('✓ App creada exitosamente!', 'success');
+                document.getElementById('status').textContent = '✓ Todo cargado correctamente!';
+                document.getElementById('status').style.color = '#51cf66';
+            } catch (e) {
+                log(`✗ Error al crear App: ${e.message}\n${e.stack}`, 'error');
+                document.getElementById('status').textContent = '✗ Error al inicializar';
+                document.getElementById('status').style.color = '#ff6b6b';
+            }
+        } else {
+            log('✗ app.js no se cargó', 'error');
+        }
+    </script>
+
+    <script src="js/obs-helper.js"></script>
+    <script>
+        if (typeof OBSHelper !== 'undefined') {
+            log('✓ obs-helper.js cargado correctamente', 'success');
+        } else {
+            log('✗ obs-helper.js no se cargó', 'error');
+        }
+    </script>
+</body>
+</html>
