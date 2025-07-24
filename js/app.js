@@ -30,8 +30,11 @@ class App {
         document.getElementById('addOption').addEventListener('click', () => this.addOption());
         document.getElementById('toggleTheme').addEventListener('click', () => this.toggleTheme());
         document.getElementById('toggleSound').addEventListener('click', () => this.toggleSound());
+        document.getElementById('toggleTournament').addEventListener('click', () => this.toggleTournament());
         document.getElementById('exportConfig').addEventListener('click', () => this.exportConfig());
         document.getElementById('importConfig').addEventListener('click', () => this.importConfig());
+        document.getElementById('toggleConfig').addEventListener('click', () => this.toggleConfigPanel());
+        document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
         
         document.getElementById('importFile').addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -71,11 +74,16 @@ class App {
                 this.updateStats();
                 this.renderHistory();
                 
+                // Show result modal
+                this.showResultModal(result);
+                
                 if (this.config.tournamentMode && this.config.getAvailableOptions().length === 0) {
-                    alert('¡Torneo completado! Reiniciando opciones...');
-                    this.config.resetTournament();
-                    this.renderOptions();
-                    this.roulette.draw();
+                    setTimeout(() => {
+                        alert('¡Torneo completado! Reiniciando opciones...');
+                        this.config.resetTournament();
+                        this.renderOptions();
+                        this.roulette.draw();
+                    }, 2000);
                 }
             }
             
@@ -204,6 +212,57 @@ class App {
         if (!this.config.soundEnabled) {
             document.getElementById('toggleSound').textContent = '🔇';
         }
+        
+        if (this.config.tournamentMode) {
+            document.getElementById('toggleTournament').classList.add('active');
+        }
+    }
+    
+    toggleConfigPanel() {
+        const panel = document.getElementById('configPanel');
+        const icon = document.querySelector('.toggle-icon');
+        
+        panel.classList.toggle('collapsed');
+        
+        if (panel.classList.contains('collapsed')) {
+            icon.style.transform = 'rotate(0deg)';
+        } else {
+            icon.style.transform = 'rotate(180deg)';
+        }
+    }
+    
+    toggleTournament() {
+        const button = document.getElementById('toggleTournament');
+        this.config.tournamentMode = !this.config.tournamentMode;
+        
+        if (this.config.tournamentMode) {
+            button.classList.add('active');
+            this.config.resetTournament();
+        } else {
+            button.classList.remove('active');
+        }
+        
+        this.renderOptions();
+        this.roulette.draw();
+        this.config.saveToLocalStorage();
+    }
+    
+    showResultModal(result) {
+        const modal = document.getElementById('resultModal');
+        const resultText = document.getElementById('resultText');
+        
+        resultText.textContent = result;
+        modal.classList.add('show');
+        
+        // Add some confetti or special effects here if desired
+        if (this.config.soundEnabled) {
+            // Play win sound is already handled in roulette.js
+        }
+    }
+    
+    closeModal() {
+        const modal = document.getElementById('resultModal');
+        modal.classList.remove('show');
     }
 }
 

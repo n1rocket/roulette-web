@@ -11,52 +11,83 @@
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <h1 class="title">CS2 ROULETTE</h1>
-            <div class="subtitle">HARLEY QUINN EDITION</div>
-        </header>
-
         <main class="main-content">
-            <div class="roulette-container">
-                <div class="roulette-wrapper">
-                    <canvas id="roulette" width="600" height="600"></canvas>
-                    <div class="pointer"></div>
+            <div class="roulette-section">
+                <header class="header">
+                    <h1 class="title">CS2 ROULETTE</h1>
+                    <div class="subtitle">HARLEY QUINN EDITION</div>
+                </header>
+                
+                <div class="roulette-container">
+                    <div class="roulette-wrapper">
+                        <canvas id="roulette" width="600" height="600"></canvas>
+                        <div class="pointer"></div>
+                    </div>
+                    <button id="spinButton" class="spin-button">SPIN IT!</button>
                 </div>
-                <button id="spinButton" class="spin-button">SPIN IT!</button>
             </div>
 
-            <aside class="sidebar">
-                <div class="panel config-panel">
-                    <h2>OPCIONES</h2>
-                    <div id="optionsList" class="options-list"></div>
-                    <button id="addOption" class="add-button">+ AÑADIR</button>
-                </div>
-
-                <div class="panel stats-panel">
-                    <h2>ESTADÍSTICAS</h2>
-                    <div id="stats" class="stats">
-                        <div class="stat">
-                            <span class="stat-label">Total Spins:</span>
-                            <span id="totalSpins" class="stat-value">0</span>
+            <div class="bottom-section">
+                <button id="toggleConfig" class="config-toggle-button">
+                    <span class="toggle-icon">⚙️</span>
+                    <span class="toggle-text">CONFIGURACIÓN</span>
+                </button>
+                
+                <div id="configPanel" class="config-panel collapsed">
+                    <div class="panel-content">
+                        <div class="panel-section">
+                            <h3>OPCIONES</h3>
+                            <div id="optionsList" class="options-list"></div>
+                            <button id="addOption" class="add-button">+ AÑADIR OPCIÓN</button>
+                        </div>
+                        
+                        <div class="panel-section">
+                            <h3>ESTADÍSTICAS</h3>
+                            <div id="stats" class="stats">
+                                <div class="stat">
+                                    <span class="stat-label">Total Spins:</span>
+                                    <span id="totalSpins" class="stat-value">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section">
+                            <h3>HISTORIAL</h3>
+                            <ul id="history" class="history-list"></ul>
+                        </div>
+                        
+                        <div class="panel-controls">
+                            <button id="toggleTheme" class="control-button" title="Cambiar tema">🌙</button>
+                            <button id="toggleSound" class="control-button" title="Sonido">🔊</button>
+                            <button id="toggleTournament" class="control-button" title="Modo torneo">🏆</button>
+                            <button id="exportConfig" class="control-button" title="Exportar">💾</button>
+                            <button id="importConfig" class="control-button" title="Importar">📁</button>
                         </div>
                     </div>
                 </div>
-
-                <div class="panel history-panel">
-                    <h2>HISTORIAL</h2>
-                    <ul id="history" class="history-list"></ul>
-                </div>
-            </aside>
+            </div>
         </main>
-
-        <footer class="controls">
-            <button id="toggleTheme" class="control-button">🌙</button>
-            <button id="toggleSound" class="control-button">🔊</button>
-            <button id="exportConfig" class="control-button">💾</button>
-            <button id="importConfig" class="control-button">📁</button>
-            <input type="file" id="importFile" accept=".json" style="display: none;">
-        </footer>
     </div>
+
+    <!-- Result Modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">¡RESULTADO!</h2>
+            </div>
+            <div class="modal-body">
+                <div id="resultText" class="result-text"></div>
+                <div class="result-decoration">
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                </div>
+            </div>
+            <button id="closeModal" class="modal-close">CONTINUAR</button>
+        </div>
+    </div>
+
+    <input type="file" id="importFile" accept=".json" style="display: none;">
 
     <audio id="spinSound" src="assets/sounds/spin.mp3" preload="auto"></audio>
     <audio id="winSound" src="assets/sounds/win.mp3" preload="auto"></audio>
