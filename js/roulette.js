@@ -14,6 +14,9 @@ class Roulette {
         this.onSpinComplete = null;
         this.acceleration = 0.98;
         this.selectedResult = null;
+        this.animationStartTime = 0;
+        this.animationDuration = 0;
+        this.startRotation = 0;
         
         // Performance optimizations
         this.ctx.imageSmoothingEnabled = true;
@@ -130,12 +133,22 @@ class Roulette {
             rotationNeeded += Math.PI * 2;
         }
         
-        // Add multiple full rotations for effect
-        const spinCount = 5 + Math.floor(Math.random() * 3);
+        // Get spin time from config (in milliseconds)
+        const minTime = this.config.animationConfig.minSpinTime;
+        const maxTime = this.config.animationConfig.maxSpinTime;
+        this.animationDuration = Math.random() * (maxTime - minTime) + minTime;
+        
+        // Calculate rotations based on spin duration
+        // More rotations for longer spin times
+        const baseRotations = this.animationDuration / 400; // Adjust for visual appeal
+        const spinCount = Math.floor(baseRotations + Math.random() * 2);
         this.targetRotation = this.rotation + rotationNeeded + (spinCount * Math.PI * 2);
         
-        this.currentSpeed = 0.15;
-        this.acceleration = 0.98;
+        // Store animation start time and initial rotation
+        this.animationStartTime = performance.now();
+        this.startRotation = this.rotation;
+        
+        console.log(`Spin time: ${(this.animationDuration / 1000).toFixed(1)}s, Rotations: ${spinCount}`);
         
         console.log('Selected index:', selectedIndex, 'Result:', this.selectedResult.text);
 
@@ -155,27 +168,30 @@ class Roulette {
             return;
         }
 
-        const diff = this.targetRotation - this.rotation;
+        const currentTime = performance.now();
+        const elapsed = currentTime - this.animationStartTime;
+        const progress = Math.min(elapsed / this.animationDuration, 1);
         
-        if (Math.abs(diff) < 0.01 && this.currentSpeed < 0.001) {
+        // Use easing function for smooth deceleration
+        // This creates a natural spinning effect that slows down over time
+        const easeOut = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
+        
+        // Calculate current rotation based on progress
+        const totalRotationNeeded = this.targetRotation - this.startRotation;
+        
+        // Update rotation based on eased progress
+        this.rotation = this.startRotation + (totalRotationNeeded * easeOut);
+        
+        // Check if animation is complete
+        if (progress >= 1) {
             this.rotation = this.targetRotation;
             this.isSpinning = false;
             this.draw();
             setTimeout(() => this.completeSpin(), 100);
             return;
         }
-
-        if (Math.abs(diff) < Math.PI * 2) {
-            this.currentSpeed *= this.acceleration;
-        }
         
-        if (this.currentSpeed < 0.0001) {
-            this.currentSpeed = 0.0001;
-        }
-
-        this.rotation += diff * this.currentSpeed;
         this.draw();
-
         this.animationId = requestAnimationFrame(() => this.animate());
     }
 

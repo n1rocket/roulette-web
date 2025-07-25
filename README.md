@@ -32,6 +32,7 @@ Una ruleta interactiva y personalizable diseñada específicamente para streamer
 - **Presets personalizados**: Guarda y comparte configuraciones
 - **Import/Export**: Comparte configuraciones con otros streamers
 - **Hotkeys**: Control rápido con teclado
+- **Tiempo de giro configurable**: Define un rango de tiempo (min/max) para giros aleatorios
 
 ### 🎬 Integración Streaming
 

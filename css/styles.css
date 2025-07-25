@@ -1015,6 +1015,28 @@ body {
     font-family: inherit;
 }
 
+.spin-time-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.spin-time-controls label {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.spin-time-input {
+    width: 60px;
+    padding: 5px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
 .setting-item small {
     color: var(--text-secondary);
     font-size: 12px;

@@ -65,6 +65,10 @@ class Config {
             optionCounts: {}
         };
         this.history = [];
+        this.animationConfig = {
+            minSpinTime: 3000,
+            maxSpinTime: 5000
+        };
         this.loadFromLocalStorage();
     }
 

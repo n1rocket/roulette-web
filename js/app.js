@@ -624,6 +624,53 @@ class App {
             });
         }
         
+        // Spin time listeners
+        const minSpinTime = document.getElementById('minSpinTime');
+        const maxSpinTime = document.getElementById('maxSpinTime');
+        const spinTimeInfo = document.getElementById('spinTimeInfo');
+        
+        const updateSpinTimeInfo = () => {
+            if (spinTimeInfo && minSpinTime && maxSpinTime) {
+                const min = parseFloat(minSpinTime.value).toFixed(1);
+                const max = parseFloat(maxSpinTime.value).toFixed(1);
+                spinTimeInfo.textContent = `Tiempo: ${min} - ${max} segundos`;
+            }
+        };
+        
+        if (minSpinTime) {
+            minSpinTime.addEventListener('change', (e) => {
+                let value = parseFloat(e.target.value);
+                const maxValue = parseFloat(maxSpinTime.value);
+                
+                // Ensure min is not greater than max
+                if (value > maxValue) {
+                    value = maxValue;
+                    e.target.value = value;
+                }
+                
+                this.config.animationConfig.minSpinTime = value * 1000; // Convert to milliseconds
+                this.config.saveToLocalStorage();
+                updateSpinTimeInfo();
+            });
+        }
+        
+        if (maxSpinTime) {
+            maxSpinTime.addEventListener('change', (e) => {
+                let value = parseFloat(e.target.value);
+                const minValue = parseFloat(minSpinTime.value);
+                
+                // Ensure max is not less than min
+                if (value < minValue) {
+                    value = minValue;
+                    e.target.value = value;
+                }
+                
+                this.config.animationConfig.maxSpinTime = value * 1000; // Convert to milliseconds
+                this.config.saveToLocalStorage();
+                updateSpinTimeInfo();
+            });
+        }
+        
         // Load saved settings
         this.loadOBSSettings();
     }
@@ -668,6 +715,26 @@ class App {
             } catch (e) {
                 console.error('Error loading OBS settings:', e);
             }
+        }
+        
+        // Load spin time settings
+        const minSpinTime = document.getElementById('minSpinTime');
+        const maxSpinTime = document.getElementById('maxSpinTime');
+        const spinTimeInfo = document.getElementById('spinTimeInfo');
+        
+        if (minSpinTime && this.config.animationConfig.minSpinTime) {
+            minSpinTime.value = this.config.animationConfig.minSpinTime / 1000;
+        }
+        
+        if (maxSpinTime && this.config.animationConfig.maxSpinTime) {
+            maxSpinTime.value = this.config.animationConfig.maxSpinTime / 1000;
+        }
+        
+        // Update display info
+        if (spinTimeInfo && minSpinTime && maxSpinTime) {
+            const min = parseFloat(minSpinTime.value).toFixed(1);
+            const max = parseFloat(maxSpinTime.value).toFixed(1);
+            spinTimeInfo.textContent = `Tiempo: ${min} - ${max} segundos`;
         }
     }
     
