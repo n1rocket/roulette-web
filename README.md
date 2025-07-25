@@ -1,259 +1,215 @@
-# CS2 Roulette - Harley Quinn Edition 🎰
+# 🎰 Ruleta Web para Streaming
 
-Una ruleta web interactiva con temática de Counter-Strike 2 y estilo Harley Quinn, optimizada para streaming en OBS.
+Una ruleta interactiva y personalizable diseñada específicamente para streamers. Compatible con OBS, Streamlabs y lista para GitHub Pages.
 
-![Version](https://img.shields.io/badge/version-1.0.0-ff1493.svg)
-![License](https://img.shields.io/badge/license-MIT-dc143c.svg)
-![OBS Compatible](https://img.shields.io/badge/OBS-Compatible-9400d3.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-## 🎮 Características
+## ✨ Características
 
-### Funcionalidades Principales
-- **Sistema de probabilidades configurable**: Asigna pesos individuales a cada opción
-- **Animaciones fluidas**: Física realista con aceleración y desaceleración
-- **Modo torneo**: Elimina opciones ya seleccionadas automáticamente
-- **Efectos visuales**: Partículas, confeti y fuegos artificiales al ganar
-- **Sonidos personalizables**: Efectos de sonido para girar y ganar
-- **Temas**: Modo oscuro/claro con paleta de colores Harley Quinn
-- **Import/Export**: Guarda y comparte configuraciones
+### 🎯 Núcleo
+- **Ruleta animada** con física realista
+- **Sistema de probabilidades** configurable por opción
+- **Múltiples temas visuales** (6 temas incluidos)
+- **Efectos de sonido** personalizables
+- **Guardado automático** de configuración
 
-### Interfaz
-- Diseño centrado en la ruleta
-- Panel de configuración colapsable
-- Modal de resultado con animaciones
-- Totalmente responsive
-- Optimizado para OBS Browser Source
+### 🎮 Modos de Juego
+- **Modo Normal**: Ruleta estándar
+- **Modo Torneo**: Elimina opciones ya seleccionadas
+- **Auto-Spin**: Gira automáticamente cada X segundos
+- **Predicciones**: Los viewers pueden predecir resultados
 
-## 🚀 Inicio Rápido
+### 📊 Estadísticas
+- Contador de giros totales y por sesión
+- Historial detallado con timestamps
+- Gráficos interactivos (circular, barras, líneas)
+- Análisis de probabilidades reales vs esperadas
+- Detección de patrones y rachas
 
-### Instalación Local
+### 🔧 Personalización
+- **Presets incluidos**: CS2, Valorant, Fortnite, Apex, LoL, y más
+- **Presets personalizados**: Guarda y comparte configuraciones
+- **Import/Export**: Comparte configuraciones con otros streamers
+- **Hotkeys**: Control rápido con teclado
 
-1. Clona el repositorio:
+### 🎬 Integración Streaming
+
+#### OBS Browser Source
+- Modo OBS optimizado
+- Múltiples layouts (compacto, ultra-compacto)
+- Chroma key para fondos transparentes
+- Modo rendimiento para streams pesados
+
+#### Streamlabs
+- **Activación automática** por eventos:
+  - Donaciones (monto mínimo configurable)
+  - Suscripciones (1-3 giros según tier)
+  - Bits/Cheers
+  - Raids (múltiples giros según tamaño)
+  - Hosts
+- **Notificaciones animadas** en pantalla
+- **Sistema de predicciones** para chat
+
+## 🚀 Demo en Vivo
+
+Próximamente en: `https://tu-usuario.github.io/roulette-web/`
+
+## 💻 Instalación
+
+### Opción 1: GitHub Pages (Recomendado)
+
+1. Fork este repositorio
+2. Ve a Settings → Pages
+3. Activa GitHub Pages desde la rama `main`
+4. Tu ruleta estará en: `https://tu-usuario.github.io/roulette-web/`
+
+### Opción 2: Uso Local
+
 ```bash
-git clone https://github.com/tuusuario/roulette-web.git
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/roulette-web.git
 cd roulette-web
+
+# Abrir en el navegador
+# Opción A: Directamente
+open index.html
+
+# Opción B: Con servidor local
+python -m http.server 8000
+# Visitar http://localhost:8000
 ```
 
-2. Instala las dependencias (para desarrollo):
-```bash
-npm install
-```
+## 🎯 Uso Rápido
 
-3. Abre `index.html` en tu navegador
+### En OBS
 
-### Uso Básico
-
-1. **Configurar opciones**: Haz clic en ⚙️ CONFIGURACIÓN
-2. **Añadir/editar opciones**: Modifica el texto y peso de cada opción
-3. **Girar la ruleta**: Pulsa el botón SPIN IT!
-4. **Ver resultado**: Aparecerá un modal con efectos especiales
-
-## 🎥 Integración con OBS
+1. Agregar **Browser Source**
+2. URL: `https://tu-usuario.github.io/roulette-web/?obs`
+3. Dimensiones: 800x600 (o ajustar según necesites)
+4. ✅ Marcar "Shutdown source when not visible"
 
 ### Configuración Básica
 
-1. En OBS, añade una nueva fuente "Browser"
-2. URL: `file:///ruta/completa/a/index.html?obs`
-3. Ancho: 1920, Alto: 1080 (o tu resolución preferida)
-4. FPS: 60
+1. Click en **⚙️ CONFIGURACIÓN**
+2. Selecciona un preset o crea opciones personalizadas
+3. Ajusta probabilidades con los pesos (1-100)
+4. ¡Listo para girar!
 
-### Parámetros URL para OBS
+### Hotkeys
 
-La ruleta soporta múltiples parámetros para personalizar la experiencia en OBS:
+- `Space/Enter` - Girar la ruleta
+- `C` - Abrir/cerrar configuración
+- `T` - Cambiar tema
+- `S` - Toggle sonido
+- `M` - Toggle modo torneo
+- `Ctrl+R` - Resetear estadísticas
 
-```
-index.html?obs&compact&no-header&bg=00ff00
-```
+## 🔗 URLs Especiales
 
-#### Parámetros Disponibles
-
-| Parámetro | Descripción |
-|-----------|-------------|
-| `obs` | Activa el modo OBS (optimizaciones de rendimiento) |
-| `compact` | Modo compacto (80% del tamaño) |
-| `ultra-compact` | Modo ultra compacto (60% del tamaño) |
-| `chroma` | Fondo verde para chroma key |
-| `high-contrast` | Modo de alto contraste |
-| `performance` | Desactiva animaciones no esenciales |
-| `alert` | Modo alerta (resultados más grandes) |
-| `transparent` | Paneles con transparencia |
-| `no-header` | Oculta el título |
-| `config` | Muestra el panel de configuración |
-| `bg=RRGGBB` | Color de fondo personalizado (hex) |
-| `zoom=0.8` | Nivel de zoom personalizado |
-| `auto-spin=30` | Auto-gira cada X segundos |
-| `hide=title,button` | Oculta elementos específicos |
-
-### Ejemplos de Configuración OBS
-
-**Ruleta minimalista transparente:**
-```
-index.html?obs&no-header&transparent
-```
-
-**Modo alerta para notificaciones:**
-```
-index.html?obs&alert&hide=button,title
-```
-
-**Fondo chroma key compacto:**
-```
-index.html?obs&chroma&compact
-```
-
-### Control Remoto vía JavaScript
-
-Puedes controlar la ruleta desde OBS usando JavaScript:
-
-```javascript
-// En OBS Browser Source - Interact
-obsBrowserSourceInteract('spin'); // Girar
-obsBrowserSourceInteract('reset'); // Resetear
-obsBrowserSourceInteract('setMode', {mode: 'alert'}); // Cambiar modo
-obsBrowserSourceInteract('setOptions', [ // Cambiar opciones
-    {text: 'Opción 1', weight: 50, color: '#ff0000'},
-    {text: 'Opción 2', weight: 30, color: '#00ff00'}
-]);
-```
-
-## ⚙️ Configuración Avanzada
-
-### Estructura de Opciones
-
-```json
-{
-    "options": [
-        {
-            "text": "Headshot!",
-            "weight": 10,
-            "color": "#ff0000"
-        }
-    ],
-    "theme": "dark",
-    "soundEnabled": true,
-    "soundVolume": 0.5,
-    "tournamentMode": false
-}
-```
-
-### Personalización de Estilos
-
-Los colores principales se pueden modificar en `css/styles.css`:
-
-```css
-:root {
-    --accent-red: #dc143c;
-    --accent-pink: #ff1493;
-    --accent-purple: #9400d3;
-    --accent-cs-orange: #ff7b00;
-    --accent-cs-blue: #1e90ff;
-}
-```
-
-### Añadir Sonidos
-
-Coloca archivos de audio en `assets/sounds/`:
-- `spin.mp3`: Sonido al girar
-- `win.mp3`: Sonido al ganar
-
-## 🧪 Testing
-
-Ejecutar los tests:
 ```bash
-npm test
+# Modo normal
+https://tu-usuario.github.io/roulette-web/
+
+# Para OBS (oculta configuración)
+https://tu-usuario.github.io/roulette-web/?obs
+
+# Modo compacto
+https://tu-usuario.github.io/roulette-web/?obs&compact
+
+# Chroma key (fondo verde)
+https://tu-usuario.github.io/roulette-web/?obs&chroma
+
+# Auto-spin cada 30 segundos
+https://tu-usuario.github.io/roulette-web/?auto-spin=30
 ```
-
-Con coverage:
-```bash
-npm run test:coverage
-```
-
-## 📝 Atajos de Teclado
-
-| Tecla | Acción |
-|-------|--------|
-| `Space` | Girar la ruleta |
-| `C` | Abrir/cerrar configuración |
-| `T` | Cambiar tema |
-| `M` | Silenciar/activar sonido |
-| `R` | Resetear estadísticas |
 
 ## 🎨 Temas Disponibles
 
-- **Dark Mode** (predeterminado): Tema oscuro estilo Harley Quinn
-- **Light Mode**: Tema claro con colores vibrantes
-- **High Contrast**: Para mejor visibilidad
-- **Chroma Mode**: Fondo verde para chroma key
+1. **Dark** (default) - Tema oscuro elegante
+2. **Light** - Tema claro minimalista
+3. **Harley** - Rosa y morado vibrante
+4. **CS2** - Naranja y azul competitivo
+5. **Neon** - Colores neón brillantes
+6. **Retro** - Verde terminal clásico
 
-## 🔧 Desarrollo
+## 📱 Compatibilidad
 
-### Estructura del Proyecto
+- ✅ Chrome / Edge (Recomendado)
+- ✅ Firefox
+- ✅ Safari
+- ✅ OBS Browser Source
+- ✅ Streamlabs OBS
+- ✅ Mobile (responsive)
+
+## 🔧 Configuración Avanzada
+
+### Streamlabs Integration
+
+1. Obtén tu Socket API Token desde Streamlabs
+2. Click en "🔴 Conectar" en el panel Streamlabs
+3. Configura triggers mínimos
+4. ¡Los eventos activarán la ruleta automáticamente!
+
+### Custom Presets
+
+```javascript
+// Estructura de un preset
+{
+  "name": "Mi Preset",
+  "options": [
+    { "text": "Opción 1", "weight": 30, "color": "#ff0000" },
+    { "text": "Opción 2", "weight": 70, "color": "#00ff00" }
+  ]
+}
+```
+
+## 📊 Estructura del Proyecto
 
 ```
 roulette-web/
-├── index.html
+├── index.html              # Página principal
 ├── css/
-│   ├── styles.css
-│   └── obs-optimized.css
+│   ├── styles.css         # Estilos principales
+│   └── obs-optimized.css  # Optimizaciones para OBS
 ├── js/
-│   ├── config.js
-│   ├── roulette.js
-│   ├── particles.js
-│   ├── app.js
-│   └── obs-helper.js
-├── assets/
-│   └── sounds/
-├── tests/
-│   ├── config.test.js
-│   └── roulette.test.js
-└── README.md
+│   ├── app.js            # Aplicación principal
+│   ├── config.js         # Gestión de configuración
+│   ├── roulette.js       # Lógica de la ruleta
+│   ├── charts.js         # Gráficos estadísticos
+│   ├── particles.js      # Efectos visuales
+│   ├── streamlabs.js     # Integración Streamlabs
+│   └── presets.js        # Presets predefinidos
+└── assets/
+    └── sounds/           # Efectos de sonido
 ```
 
-### Comandos
+## 🤝 Contribuir
 
-```bash
-npm test          # Ejecutar tests
-npm run lint      # Verificar código
-npm run lint:fix  # Arreglar problemas de estilo
-```
-
-## 🐛 Solución de Problemas
-
-### La ruleta no gira
-- Verifica que haya opciones configuradas
-- Comprueba la consola del navegador para errores
-- Asegúrate de que el botón no esté deshabilitado
-
-### No se escuchan los sonidos
-- Verifica que los archivos de audio estén en `assets/sounds/`
-- Comprueba que el sonido esté activado (icono 🔊)
-- Algunos navegadores requieren interacción antes de reproducir audio
-
-### Problemas en OBS
-- Usa el parámetro `?obs` en la URL
-- Prueba el modo `performance` si hay lag
-- Ajusta el FPS en OBS a 60
-
-## 📄 Licencia
-
-MIT License - ver [LICENSE](LICENSE)
-
-## 🤝 Contribuciones
-
-Las contribuciones son bienvenidas! Por favor:
+¡Las contribuciones son bienvenidas!
 
 1. Fork el proyecto
-2. Crea tu rama de características (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+2. Crea tu rama (`git checkout -b feature/AmazingFeature`)
+3. Commit cambios (`git commit -m 'Add AmazingFeature'`)
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
+## 📝 Licencia
+
+Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles.
+
+## 🙏 Agradecimientos
+
+- Diseñado para la comunidad de streamers
+- Inspirado en las necesidades reales de streaming
+- Construido con tecnologías web modernas
+
 ## 📞 Soporte
 
-- Crear un [Issue](https://github.com/tuusuario/roulette-web/issues)
-- Discord: [Tu servidor]
-- Email: tuemail@ejemplo.com
+- 🐛 [Reportar bugs](https://github.com/tu-usuario/roulette-web/issues)
+- 💡 [Solicitar features](https://github.com/tu-usuario/roulette-web/issues)
+- 📧 Contacto: tu-email@ejemplo.com
 
 ---
 
-Hecho con ❤️ para la comunidad de streaming
+Hecho con ❤️ para streamers
