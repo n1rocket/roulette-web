@@ -343,8 +343,13 @@ class StreamlabsIntegration {
             // Store event data for later use
             this.lastEventData = eventData;
             
-            // Trigger the spin
-            this.app.spin();
+            // If in auto-hide mode, show and spin
+            if (this.app.autoHideMode) {
+                this.app.showRouletteAndSpin();
+            } else {
+                // Normal spin
+                this.app.spin();
+            }
             
             // Log the event
             this.logEvent(eventData);

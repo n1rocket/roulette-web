@@ -9,6 +9,11 @@ class App {
     }
 
     init() {
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        this.streamlabsApiKey = urlParams.get('streamlabs') || urlParams.get('apikey');
+        this.autoHideMode = urlParams.has('autohide') || urlParams.has('streamlabs');
+        
         const canvas = document.getElementById('roulette');
         this.roulette = new Roulette(canvas, this.config);
         
@@ -40,6 +45,21 @@ class App {
         
         // Initialize Streamlabs integration
         this.streamlabs = new StreamlabsIntegration(this);
+        
+        // Auto-hide mode: hide everything initially
+        if (this.autoHideMode) {
+            this.hideRoulette();
+            // Auto-connect to Streamlabs if API key provided
+            if (this.streamlabsApiKey) {
+                setTimeout(() => {
+                    const input = document.getElementById('streamlabsToken');
+                    if (input) {
+                        input.value = this.streamlabsApiKey;
+                        this.streamlabs.connect();
+                    }
+                }, 1000);
+            }
+        }
         
         console.log('App initialized with options:', this.config.options);
     }
@@ -124,6 +144,14 @@ class App {
                 
                 // Show result modal
                 this.showResultModal(result);
+                
+                // Auto-hide after spin if enabled
+                if (this.hideAfterSpin) {
+                    setTimeout(() => {
+                        this.hideRoulette();
+                        this.hideAfterSpin = false;
+                    }, 5000); // Hide 5 seconds after showing result
+                }
                 
                 if (this.config.tournamentMode && this.config.getAvailableOptions().length === 0) {
                     setTimeout(() => {
@@ -1171,6 +1199,32 @@ class App {
             notification.style.opacity = '0';
             setTimeout(() => notification.remove(), 300);
         }, 2000);
+    }
+    
+    hideRoulette() {
+        const container = document.querySelector('.container');
+        if (container) {
+            container.style.display = 'none';
+        }
+    }
+    
+    showRouletteAndSpin() {
+        const container = document.querySelector('.container');
+        if (container) {
+            container.style.display = 'flex';
+            container.style.animation = 'fadeIn 0.5s ease';
+        }
+        
+        // Auto-spin after showing
+        setTimeout(() => {
+            this.spin();
+        }, 500);
+        
+        // Hide after result + 5 seconds
+        if (this.autoHideMode) {
+            // Set flag to hide after spin completes
+            this.hideAfterSpin = true;
+        }
     }
 }
 

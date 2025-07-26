@@ -123,6 +123,12 @@ https://tu-usuario.github.io/roulette-web/?obs&chroma
 
 # Auto-spin cada 30 segundos
 https://tu-usuario.github.io/roulette-web/?auto-spin=30
+
+# Streamlabs con auto-hide (ruleta oculta hasta recibir sub)
+https://tu-usuario.github.io/roulette-web/?streamlabs=TU_API_KEY
+
+# Combinar opciones
+https://tu-usuario.github.io/roulette-web/?streamlabs=TU_API_KEY&obs&compact
 ```
 
 ## 🎨 Temas Disponibles
@@ -147,10 +153,24 @@ https://tu-usuario.github.io/roulette-web/?auto-spin=30
 
 ### Streamlabs Integration
 
-1. Obtén tu Socket API Token desde Streamlabs
+#### Método 1: Manual
+1. Obtén tu Socket API Token desde [Streamlabs Dashboard](https://streamlabs.com/dashboard#/settings/api-settings)
 2. Click en "🔴 Conectar" en el panel Streamlabs
-3. Configura triggers mínimos
-4. ¡Los eventos activarán la ruleta automáticamente!
+3. Pega tu API Token
+4. Configura triggers mínimos
+
+#### Método 2: Por URL (Recomendado para OBS)
+1. Obtén tu Socket API Token desde Streamlabs
+2. Usa la URL: `https://tu-usuario.github.io/roulette-web/?streamlabs=TU_API_KEY`
+3. La ruleta se ocultará automáticamente hasta recibir una suscripción
+4. Girará automáticamente y se volverá a ocultar después de 5 segundos
+
+#### Comportamiento Auto-Hide
+- La ruleta permanece oculta hasta recibir un evento
+- Se muestra con animación al recibir suscripción/donación/etc
+- Gira automáticamente
+- Se oculta 5 segundos después de mostrar el resultado
+- Perfecto para overlays en OBS que solo aparecen con eventos
 
 ### Custom Presets
 
