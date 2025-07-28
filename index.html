@@ -185,22 +185,23 @@
                         </div>
                         
                         <div class="panel-section">
-                            <h3>STREAMLABS</h3>
-                            <div class="streamlabs-settings">
-                                <div class="streamlabs-status">
-                                    <button id="streamlabsConnect" class="streamlabs-button">🔴 Conectar</button>
-                                    <input type="password" id="streamlabsToken" placeholder="Socket API Token" class="streamlabs-input" style="display: none;">
+                            <h3>TWITCH</h3>
+                            <div class="twitch-settings">
+                                <div class="twitch-status">
+                                    <button id="twitchConnect" class="twitch-button">🔴 Conectar</button>
+                                    <input type="password" id="twitchToken" placeholder="Access Token" class="twitch-input" style="display: none;">
+                                    <small class="twitch-help" style="display: none;">Obtén tu token en <a href="https://twitchtokengenerator.com" target="_blank">twitchtokengenerator.com</a></small>
                                 </div>
                                 
-                                <div class="streamlabs-triggers">
-                                    <h4>Triggers Automáticos</h4>
-                                    <label class="trigger-item">
-                                        <input type="checkbox" id="triggerDonation" checked>
-                                        <span>Donaciones (min: $<input type="number" id="minDonation" value="5" min="1" class="min-input">)</span>
-                                    </label>
+                                <div class="twitch-triggers">
+                                    <h4>Eventos Automáticos</h4>
                                     <label class="trigger-item">
                                         <input type="checkbox" id="triggerSubscription" checked>
                                         <span>Suscripciones</span>
+                                    </label>
+                                    <label class="trigger-item">
+                                        <input type="checkbox" id="triggerGiftSub" checked>
+                                        <span>Subs Regaladas</span>
                                     </label>
                                     <label class="trigger-item">
                                         <input type="checkbox" id="triggerBits" checked>
@@ -208,14 +209,19 @@
                                     </label>
                                     <label class="trigger-item">
                                         <input type="checkbox" id="triggerRaid" checked>
-                                        <span>Raids (min: <input type="number" id="minRaiders" value="10" min="1" class="min-input"> viewers)</span>
+                                        <span>Raids (min: <input type="number" id="minRaiders" value="1" min="1" class="min-input"> viewers)</span>
+                                    </label>
+                                    <label class="trigger-item">
+                                        <input type="checkbox" id="triggerFollow">
+                                        <span>Follows</span>
                                     </label>
                                 </div>
                                 
-                                <div class="streamlabs-test">
+                                <div class="twitch-test">
                                     <h4>Pruebas</h4>
-                                    <button id="testDonation" class="test-button">Probar Donación</button>
                                     <button id="testSubscription" class="test-button">Probar Sub</button>
+                                    <button id="testBits" class="test-button">Probar Bits</button>
+                                    <button id="testRaid" class="test-button">Probar Raid</button>
                                 </div>
                             </div>
                         </div>
@@ -262,7 +268,7 @@
     <script src="js/roulette.js"></script>
     <script src="js/particles.js"></script>
     <script src="js/charts.js"></script>
-    <script src="js/streamlabs.js"></script>
+    <script src="js/twitch.js"></script>
     <script src="js/app.js"></script>
     <script src="js/obs-helper.js"></script>
 </body>

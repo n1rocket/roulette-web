@@ -11,8 +11,8 @@ class App {
     init() {
         // Parse URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        this.streamlabsApiKey = urlParams.get('streamlabs') || urlParams.get('apikey');
-        this.autoHideMode = urlParams.has('autohide') || urlParams.has('streamlabs');
+        this.twitchAccessToken = urlParams.get('twitch') || urlParams.get('token');
+        this.autoHideMode = urlParams.has('autohide') || urlParams.has('twitch');
         
         const canvas = document.getElementById('roulette');
         this.roulette = new Roulette(canvas, this.config);
@@ -43,20 +43,16 @@ class App {
             this.chartManager = new ChartManager(chartCanvas, this.config);
         }
         
-        // Initialize Streamlabs integration
-        this.streamlabs = new StreamlabsIntegration(this);
+        // Initialize Twitch integration
+        this.twitch = new TwitchIntegration(this);
         
         // Auto-hide mode: hide everything initially
         if (this.autoHideMode) {
             this.hideRoulette();
-            // Auto-connect to Streamlabs if API key provided
-            if (this.streamlabsApiKey) {
+            // Auto-connect to Twitch if access token provided
+            if (this.twitchAccessToken) {
                 setTimeout(() => {
-                    const input = document.getElementById('streamlabsToken');
-                    if (input) {
-                        input.value = this.streamlabsApiKey;
-                        this.streamlabs.connect();
-                    }
+                    this.twitch.connect(this.twitchAccessToken);
                 }, 1000);
             }
         }
@@ -99,8 +95,8 @@ class App {
         // Keyboard shortcuts
         this.setupKeyboardShortcuts();
         
-        // Streamlabs listeners
-        this.setupStreamlabsListeners();
+        // Twitch listeners
+        this.setupTwitchListeners();
         
         document.getElementById('importFile').addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -806,18 +802,23 @@ class App {
         }
     }
     
-    setupStreamlabsListeners() {
-        const connectButton = document.getElementById('streamlabsConnect');
-        const tokenInput = document.getElementById('streamlabsToken');
+    setupTwitchListeners() {
+        const connectButton = document.getElementById('twitchConnect');
+        const tokenInput = document.getElementById('twitchToken');
+        const helpText = document.querySelector('.twitch-help');
         
         if (connectButton) {
             connectButton.addEventListener('click', () => {
-                if (this.streamlabs.connected) {
-                    this.streamlabs.disconnect();
+                if (this.twitch.connected) {
+                    this.twitch.disconnect();
                 } else {
-                    // Show token input
-                    tokenInput.style.display = tokenInput.style.display === 'none' ? 'block' : 'none';
-                    if (tokenInput.style.display === 'block') {
+                    // Show token input and help
+                    const showInput = tokenInput.style.display === 'none';
+                    tokenInput.style.display = showInput ? 'block' : 'none';
+                    if (helpText) {
+                        helpText.style.display = showInput ? 'block' : 'none';
+                    }
+                    if (showInput) {
                         tokenInput.focus();
                     }
                 }
@@ -827,55 +828,69 @@ class App {
         if (tokenInput) {
             tokenInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && tokenInput.value) {
-                    this.streamlabs.connect(tokenInput.value);
+                    this.twitch.connect(tokenInput.value);
                     tokenInput.style.display = 'none';
+                    if (helpText) {
+                        helpText.style.display = 'none';
+                    }
                     tokenInput.value = '';
                 }
             });
         }
         
         // Test buttons
-        const testDonation = document.getElementById('testDonation');
         const testSub = document.getElementById('testSubscription');
-        
-        if (testDonation) {
-            testDonation.addEventListener('click', () => this.streamlabs.testDonation());
-        }
+        const testBits = document.getElementById('testBits');
+        const testRaid = document.getElementById('testRaid');
         
         if (testSub) {
-            testSub.addEventListener('click', () => this.streamlabs.testSubscription());
+            testSub.addEventListener('click', () => this.twitch.testSubscription());
+        }
+        
+        if (testBits) {
+            testBits.addEventListener('click', () => this.twitch.testBits());
+        }
+        
+        if (testRaid) {
+            testRaid.addEventListener('click', () => this.twitch.testRaid());
         }
         
         // Trigger settings
-        const triggers = ['Donation', 'Subscription', 'Bits', 'Raid'];
-        triggers.forEach(trigger => {
-            const checkbox = document.getElementById(`trigger${trigger}`);
+        const triggers = [
+            { id: 'Subscription', key: 'subscription' },
+            { id: 'GiftSub', key: 'giftSub' },
+            { id: 'Bits', key: 'bits' },
+            { id: 'Raid', key: 'raid' },
+            { id: 'Follow', key: 'follow' }
+        ];
+        
+        triggers.forEach(({ id, key }) => {
+            const checkbox = document.getElementById(`trigger${id}`);
             if (checkbox) {
                 checkbox.addEventListener('change', (e) => {
-                    const triggerKey = trigger.toLowerCase();
-                    this.streamlabs.settings.triggers[triggerKey].enabled = e.target.checked;
-                    this.streamlabs.saveSettings();
+                    this.twitch.settings.triggers[key].enabled = e.target.checked;
+                    this.twitch.saveSettings();
                 });
             }
         });
         
-        // Min amount inputs
-        const minInputs = {
-            'minDonation': 'donation.minAmount',
-            'minBits': 'bits.minBits',
-            'minRaiders': 'raid.minViewers'
-        };
+        // Min value inputs
+        const minBits = document.getElementById('minBits');
+        const minRaiders = document.getElementById('minRaiders');
         
-        Object.keys(minInputs).forEach(inputId => {
-            const input = document.getElementById(inputId);
-            if (input) {
-                input.addEventListener('change', (e) => {
-                    const path = minInputs[inputId].split('.');
-                    this.streamlabs.settings.triggers[path[0]][path[1]] = parseInt(e.target.value) || 1;
-                    this.streamlabs.saveSettings();
-                });
-            }
-        });
+        if (minBits) {
+            minBits.addEventListener('change', (e) => {
+                this.twitch.settings.triggers.bits.minBits = parseInt(e.target.value) || 100;
+                this.twitch.saveSettings();
+            });
+        }
+        
+        if (minRaiders) {
+            minRaiders.addEventListener('change', (e) => {
+                this.twitch.settings.triggers.raid.minViewers = parseInt(e.target.value) || 1;
+                this.twitch.saveSettings();
+            });
+        }
     }
     
     copyOBSUrl() {

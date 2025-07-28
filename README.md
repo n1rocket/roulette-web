@@ -42,15 +42,16 @@ Una ruleta interactiva y personalizable diseñada específicamente para streamer
 - Chroma key para fondos transparentes
 - Modo rendimiento para streams pesados
 
-#### Streamlabs
+#### Twitch EventSub
+- **Conexión directa** con Twitch (sin intermediarios)
 - **Activación automática** por eventos:
-  - Donaciones (monto mínimo configurable)
   - Suscripciones (1-3 giros según tier)
-  - Bits/Cheers
-  - Raids (múltiples giros según tamaño)
-  - Hosts
+  - Subs regaladas (giros según cantidad)
+  - Bits/Cheers (mínimo configurable)
+  - Raids (múltiples giros según viewers)
+  - Follows (opcional)
 - **Notificaciones animadas** en pantalla
-- **Sistema de predicciones** para chat
+- **WebSocket en tiempo real** para latencia mínima
 
 ## 🚀 Demo en Vivo
 
@@ -124,11 +125,11 @@ https://tu-usuario.github.io/roulette-web/?obs&chroma
 # Auto-spin cada 30 segundos
 https://tu-usuario.github.io/roulette-web/?auto-spin=30
 
-# Streamlabs con auto-hide (ruleta oculta hasta recibir sub)
-https://tu-usuario.github.io/roulette-web/?streamlabs=TU_API_KEY
+# Twitch con auto-hide (ruleta oculta hasta recibir evento)
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN
 
 # Combinar opciones
-https://tu-usuario.github.io/roulette-web/?streamlabs=TU_API_KEY&obs&compact
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&obs&compact
 ```
 
 ## 🎨 Temas Disponibles
@@ -151,23 +152,31 @@ https://tu-usuario.github.io/roulette-web/?streamlabs=TU_API_KEY&obs&compact
 
 ## 🔧 Configuración Avanzada
 
-### Streamlabs Integration
+### Twitch Integration
 
 #### Método 1: Manual
-1. Obtén tu Socket API Token desde [Streamlabs Dashboard](https://streamlabs.com/dashboard#/settings/api-settings)
-2. Click en "🔴 Conectar" en el panel Streamlabs
-3. Pega tu API Token
-4. Configura triggers mínimos
+1. Obtén tu Access Token desde [Twitch Token Generator](https://twitchtokengenerator.com)
+   - Scopes necesarios: `channel:read:subscriptions`, `bits:read`, `moderator:read:followers`
+2. Click en "🔴 Conectar" en el panel Twitch
+3. Pega tu Access Token
+4. Configura eventos automáticos
 
 #### Método 2: Por URL (Recomendado para OBS)
-1. Obtén tu Socket API Token desde Streamlabs
-2. Usa la URL: `https://tu-usuario.github.io/roulette-web/?streamlabs=TU_API_KEY`
-3. La ruleta se ocultará automáticamente hasta recibir una suscripción
+1. Obtén tu Access Token desde Twitch
+2. Usa la URL: `https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN`
+3. La ruleta se ocultará automáticamente hasta recibir un evento
 4. Girará automáticamente y se volverá a ocultar después de 5 segundos
+
+#### Eventos Soportados
+- **Suscripciones**: Gira 1-3 veces según el tier
+- **Subs Regaladas**: Gira según cantidad (máx 3)
+- **Bits/Cheers**: Configura mínimo de bits
+- **Raids**: Múltiples giros para raids grandes
+- **Follows**: Opcional, sin giro automático
 
 #### Comportamiento Auto-Hide
 - La ruleta permanece oculta hasta recibir un evento
-- Se muestra con animación al recibir suscripción/donación/etc
+- Se muestra con animación elegante al recibir evento
 - Gira automáticamente
 - Se oculta 5 segundos después de mostrar el resultado
 - Perfecto para overlays en OBS que solo aparecen con eventos
