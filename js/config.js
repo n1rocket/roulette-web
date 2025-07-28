@@ -73,19 +73,44 @@ class Config {
     }
 
     loadFromLocalStorage() {
-        const saved = localStorage.getItem('rouletteConfig');
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                Object.assign(this, data);
-            } catch (e) {
-                console.error('Error loading config:', e);
+        try {
+            const saved = localStorage.getItem('rouletteConfig');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    Object.assign(this, data);
+                } catch (e) {
+                    console.error('Error parsing config:', e);
+                    // Clear corrupted data
+                    localStorage.removeItem('rouletteConfig');
+                }
             }
+        } catch (e) {
+            console.error('Error accessing localStorage:', e);
+            // localStorage might be disabled or full
         }
     }
 
     saveToLocalStorage() {
-        localStorage.setItem('rouletteConfig', JSON.stringify(this));
+        try {
+            const data = JSON.stringify(this);
+            localStorage.setItem('rouletteConfig', data);
+        } catch (e) {
+            console.error('Error saving to localStorage:', e);
+            // Could be quota exceeded or localStorage disabled
+            if (e.name === 'QuotaExceededError') {
+                console.error('localStorage quota exceeded');
+                // Try to clear old data
+                try {
+                    localStorage.removeItem('rouletteEvents');
+                    localStorage.removeItem('streamlabsEvents');
+                    // Retry save
+                    localStorage.setItem('rouletteConfig', JSON.stringify(this));
+                } catch (retryError) {
+                    console.error('Failed to save even after cleanup:', retryError);
+                }
+            }
+        }
     }
 
     exportConfig() {

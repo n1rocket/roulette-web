@@ -7,6 +7,7 @@ class ParticleSystem {
         this.particles = [];
         this.emitters = [];
         this.animationId = null;
+        this.resizeHandler = null;
     }
 
     init() {
@@ -25,7 +26,9 @@ class ParticleSystem {
         this.ctx = this.canvas.getContext('2d');
         this.resize();
 
-        window.addEventListener('resize', () => this.resize());
+        // Store reference to handler for cleanup
+        this.resizeHandler = () => this.resize();
+        window.addEventListener('resize', this.resizeHandler);
     }
 
     resize() {
@@ -290,7 +293,33 @@ class ParticleSystem {
 
     clear() {
         this.particles = [];
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        if (this.ctx && this.canvas) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+    }
+
+    destroy() {
+        // Stop animation
+        this.stop();
+        
+        // Clear particles
+        this.clear();
+        
+        // Remove event listener
+        if (this.resizeHandler) {
+            window.removeEventListener('resize', this.resizeHandler);
+            this.resizeHandler = null;
+        }
+        
+        // Remove canvas
+        if (this.canvas && this.canvas.parentNode) {
+            this.canvas.parentNode.removeChild(this.canvas);
+        }
+        
+        // Clear references
+        this.canvas = null;
+        this.ctx = null;
+        this.emitters = [];
     }
 
     celebrate() {

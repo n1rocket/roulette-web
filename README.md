@@ -55,7 +55,7 @@ Una ruleta interactiva y personalizable diseñada específicamente para streamer
 
 ## 🚀 Demo en Vivo
 
-Próximamente en: `https://tu-usuario.github.io/roulette-web/`
+Próximamente en: `https://n1rocket.github.io/roulette-web/`
 
 ## 💻 Instalación
 
@@ -64,13 +64,13 @@ Próximamente en: `https://tu-usuario.github.io/roulette-web/`
 1. Fork este repositorio
 2. Ve a Settings → Pages
 3. Activa GitHub Pages desde la rama `main`
-4. Tu ruleta estará en: `https://tu-usuario.github.io/roulette-web/`
+4. Tu ruleta estará en: `https://n1rocket.github.io/roulette-web/`
 
 ### Opción 2: Uso Local
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/roulette-web.git
+git clone https://github.com/n1rocket/roulette-web.git
 cd roulette-web
 
 # Abrir en el navegador
@@ -87,7 +87,7 @@ python -m http.server 8000
 ### En OBS
 
 1. Agregar **Browser Source**
-2. URL: `https://tu-usuario.github.io/roulette-web/?obs`
+2. URL: `https://n1rocket.github.io/roulette-web/?obs`
 3. Dimensiones: 800x600 (o ajustar según necesites)
 4. ✅ Marcar "Shutdown source when not visible"
 
@@ -111,46 +111,46 @@ python -m http.server 8000
 
 ```bash
 # Modo normal
-https://tu-usuario.github.io/roulette-web/
+https://n1rocket.github.io/roulette-web/
 
 # Para OBS (oculta configuración)
-https://tu-usuario.github.io/roulette-web/?obs
+https://n1rocket.github.io/roulette-web/?obs
 
 # Modo compacto
-https://tu-usuario.github.io/roulette-web/?obs&compact
+https://n1rocket.github.io/roulette-web/?obs&compact
 
 # Chroma key (fondo verde)
-https://tu-usuario.github.io/roulette-web/?obs&chroma
+https://n1rocket.github.io/roulette-web/?obs&chroma
 
 # Auto-spin cada 30 segundos
-https://tu-usuario.github.io/roulette-web/?auto-spin=30
+https://n1rocket.github.io/roulette-web/?auto-spin=30
 
 # Twitch con auto-hide (ruleta oculta hasta recibir evento)
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN
+https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN
 
 # Solo suscripciones
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=sub
+https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=sub
 
 # Solo bits y raids
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=bits,raid
+https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=bits,raid
 
 # Bits con mínimo de 500
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&bits=500
+https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&bits=500
 
 # Raids con mínimo 10 viewers
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&raid=10
+https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&raid=10
 
 # Deshabilitar follows
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&follow=false
+https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&follow=false
 
 # Todos los eventos activados
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=all
+https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=all
 
 # Sin eventos (solo manual)
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=none
+https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=none
 
 # Combinar opciones
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&obs&compact&events=sub,bits&bits=100
+https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&obs&compact&events=sub,bits&bits=100
 ```
 
 ## 🎨 Temas Disponibles
@@ -168,7 +168,7 @@ https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&obs&compact&ev
 - ✅ Firefox
 - ✅ Safari
 - ✅ OBS Browser Source
-- ✅ Streamlabs OBS
+- ✅ Twitch
 - ✅ Mobile (responsive)
 
 ## 🔧 Configuración Avanzada
@@ -184,7 +184,7 @@ https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&obs&compact&ev
 
 #### Método 2: Por URL (Recomendado para OBS)
 1. Obtén tu Access Token desde Twitch
-2. Usa la URL: `https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN`
+2. Usa la URL: `https://n1rocket.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN`
 3. La ruleta se ocultará automáticamente hasta recibir un evento
 4. Girará automáticamente y se volverá a ocultar después de 5 segundos
 
@@ -325,8 +325,8 @@ Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles.
 
 ## 📞 Soporte
 
-- 🐛 [Reportar bugs](https://github.com/tu-usuario/roulette-web/issues)
-- 💡 [Solicitar features](https://github.com/tu-usuario/roulette-web/issues)
+- 🐛 [Reportar bugs](https://github.com/n1rocket/roulette-web/issues)
+- 💡 [Solicitar features](https://github.com/n1rocket/roulette-web/issues)
 - 📧 Contacto: tu-email@ejemplo.com
 
 ---

@@ -8,6 +8,13 @@ class App {
         this.init();
     }
 
+    // Sanitize HTML to prevent XSS
+    sanitizeHTML(str) {
+        const temp = document.createElement('div');
+        temp.textContent = str;
+        return temp.innerHTML;
+    }
+
     init() {
         // Parse URL parameters
         const urlParams = new URLSearchParams(window.location.search);
@@ -195,7 +202,7 @@ class App {
             }
             
             div.innerHTML = `
-                <input type="text" class="option-input" value="${option.text}" 
+                <input type="text" class="option-input" value="${this.sanitizeHTML(option.text)}" 
                     onchange="app.updateOption(${index}, 'text', this.value)"
                     ${isEliminated ? 'disabled' : ''}>
                 <input type="number" class="option-input option-weight" value="${option.weight}" 
@@ -211,6 +218,32 @@ class App {
     }
 
     updateOption(index, field, value) {
+        // Validate inputs
+        if (field === 'text') {
+            // Sanitize and validate text input
+            value = value.trim();
+            if (!value || value.length > 50) {
+                alert('El texto debe tener entre 1 y 50 caracteres');
+                this.renderOptions();
+                return;
+            }
+        } else if (field === 'weight') {
+            // Validate weight is a number between 1 and 100
+            value = parseInt(value);
+            if (isNaN(value) || value < 1 || value > 100) {
+                alert('El peso debe ser un número entre 1 y 100');
+                this.renderOptions();
+                return;
+            }
+        } else if (field === 'color') {
+            // Validate color is a valid hex color
+            if (!/^#[0-9A-F]{6}$/i.test(value)) {
+                alert('Color inválido');
+                this.renderOptions();
+                return;
+            }
+        }
+        
         this.config.updateOption(index, { [field]: value });
         this.roulette.draw();
     }
@@ -332,48 +365,6 @@ class App {
         }
     }
     
-    renderDetailedStats() {
-        const container = document.getElementById('optionStats');
-        container.innerHTML = '';
-        
-        const totalSpins = this.config.statistics.totalSpins;
-        if (totalSpins === 0) return;
-        
-        // Get all options with their counts
-        const optionData = [];
-        this.config.options.forEach(option => {
-            const count = this.config.statistics.optionCounts[option.text] || 0;
-            const percentage = ((count / totalSpins) * 100).toFixed(1);
-            const expectedPercentage = this.calculateExpectedPercentage(option.text);
-            
-            optionData.push({
-                name: option.text,
-                count: count,
-                percentage: percentage,
-                expectedPercentage: expectedPercentage
-            });
-        });
-        
-        // Sort by count
-        optionData.sort((a, b) => b.count - a.count);
-        
-        // Render
-        optionData.forEach(data => {
-            const item = document.createElement('div');
-            item.className = 'option-stat-item';
-            
-            const diff = data.percentage - data.expectedPercentage;
-            const diffColor = diff > 5 ? '#00ff00' : (diff < -5 ? '#ff0000' : '#ffff00');
-            
-            item.innerHTML = `
-                <span class="option-stat-name">${data.name}</span>
-                <span class="option-stat-count">${data.count}</span>
-                <span class="option-stat-percentage" style="color: ${diffColor}">${data.percentage}%</span>
-            `;
-            
-            container.appendChild(item);
-        });
-    }
     
     calculateExpectedPercentage(optionText) {
         const option = this.config.options.find(o => o.text === optionText);
@@ -788,27 +779,6 @@ class App {
         }
     }
     
-    setAutoSpin(seconds) {
-        // Clear existing interval
-        if (this.autoSpinInterval) {
-            clearInterval(this.autoSpinInterval);
-            this.autoSpinInterval = null;
-        }
-        
-        // Set new interval if seconds > 0
-        if (seconds > 0) {
-            console.log(`Auto-spin enabled: ${seconds} seconds`);
-            this.autoSpinInterval = setInterval(() => {
-                const button = document.getElementById('spinButton');
-                if (button && !button.disabled && !this.roulette.isSpinning) {
-                    console.log('Auto-spinning...');
-                    this.spin();
-                }
-            }, seconds * 1000);
-        } else {
-            console.log('Auto-spin disabled');
-        }
-    }
     
     setupTwitchListeners() {
         const connectButton = document.getElementById('twitchConnect');
@@ -1427,6 +1397,31 @@ class App {
         if (minRaiders) {
             minRaiders.value = this.twitch.settings.triggers.raid.minViewers;
         }
+    }
+
+    // Cleanup method to prevent memory leaks
+    destroy() {
+        // Clear all timeouts
+        this.timeouts.forEach(id => clearTimeout(id));
+        this.timeouts = [];
+        
+        // Clear all intervals
+        this.intervals.forEach(id => clearInterval(id));
+        this.intervals = [];
+        
+        // Clear auto spin timer
+        if (this.autoSpinTimer) {
+            clearInterval(this.autoSpinTimer);
+            this.autoSpinTimer = null;
+        }
+        
+        // Disconnect Twitch if connected
+        if (this.twitch) {
+            this.twitch.disconnect();
+        }
+        
+        // Save state before cleanup
+        this.config.saveToLocalStorage();
     }
 }
 
