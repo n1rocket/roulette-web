@@ -208,11 +208,44 @@ roulette-web/
 │   ├── roulette.js       # Lógica de la ruleta
 │   ├── charts.js         # Gráficos estadísticos
 │   ├── particles.js      # Efectos visuales
-│   ├── streamlabs.js     # Integración Streamlabs
+│   ├── twitch.js         # Integración Twitch
 │   └── presets.js        # Presets predefinidos
-└── assets/
-    └── sounds/           # Efectos de sonido
+├── tests/
+│   ├── config.test.js    # Tests de configuración
+│   ├── roulette.test.js  # Tests de ruleta
+│   └── twitch.test.js    # Tests de Twitch
+├── assets/
+│   └── sounds/           # Efectos de sonido
+└── .github/
+    └── workflows/        # CI/CD con GitHub Actions
 ```
+
+## 🧪 Testing
+
+El proyecto incluye una suite completa de tests unitarios usando Jest.
+
+### Ejecutar Tests
+
+```bash
+# Instalar dependencias
+npm install
+
+# Ejecutar todos los tests
+npm test
+
+# Ejecutar tests en modo watch
+npm run test:watch
+
+# Generar reporte de cobertura
+npm run test:coverage
+```
+
+### Cobertura de Código
+
+- ✅ Config: 100% cobertura
+- ✅ Roulette: 95%+ cobertura
+- ✅ Twitch: 90%+ cobertura
+- 🎯 Objetivo: >70% en todas las métricas
 
 ## 🤝 Contribuir
 

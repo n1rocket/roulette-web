@@ -1,27 +1,53 @@
 {
   "name": "roulette-web",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Interactive roulette wheel for streaming",
+  "main": "index.html",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "dev": "node index.js",
-    "start": "node index.js"
+    "lint": "eslint js/**/*.js",
+    "lint:fix": "eslint js/**/*.js --fix",
+    "serve": "python3 -m http.server 8000",
+    "build": "echo 'No build step required for static site'"
   },
-  "keywords": [],
+  "keywords": [
+    "roulette",
+    "streaming",
+    "twitch",
+    "obs",
+    "overlay"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@types/jest": "^29.5.12",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
     "babel-jest": "^29.7.0",
-    "eslint": "^8.57.0",
+    "eslint": "^8.52.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^30.0.5"
+    "jest-canvas-mock": "^2.5.2",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFiles": ["jest-canvas-mock"],
+    "collectCoverageFrom": [
+      "js/**/*.js",
+      "!js/presets.js",
+      "!js/obs-helper.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    },
+    "moduleNameMapper": {
+      "\\.(css|less|scss|sass)$": "<rootDir>/tests/__mocks__/styleMock.js"
+    }
   }
 }
