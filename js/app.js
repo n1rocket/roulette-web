@@ -14,6 +14,9 @@ class App {
         this.twitchAccessToken = urlParams.get('twitch') || urlParams.get('token');
         this.autoHideMode = urlParams.has('autohide') || urlParams.has('twitch');
         
+        // Parse Twitch event parameters
+        this.twitchEventConfig = this.parseTwitchEventParams(urlParams);
+        
         const canvas = document.getElementById('roulette');
         this.roulette = new Roulette(canvas, this.config);
         
@@ -45,6 +48,11 @@ class App {
         
         // Initialize Twitch integration
         this.twitch = new TwitchIntegration(this);
+        
+        // Apply Twitch event configuration from URL
+        if (this.twitchEventConfig) {
+            this.applyTwitchEventConfig();
+        }
         
         // Auto-hide mode: hide everything initially
         if (this.autoHideMode) {
@@ -1239,6 +1247,185 @@ class App {
         if (this.autoHideMode) {
             // Set flag to hide after spin completes
             this.hideAfterSpin = true;
+        }
+    }
+    
+    parseTwitchEventParams(urlParams) {
+        const config = {};
+        let hasConfig = false;
+        
+        // Parse individual event enables/disables
+        // Format: events=sub,bits,raid or events=all or events=none
+        const events = urlParams.get('events');
+        if (events) {
+            hasConfig = true;
+            if (events === 'all') {
+                config.all = true;
+            } else if (events === 'none') {
+                config.none = true;
+            } else {
+                const eventList = events.split(',').map(e => e.trim().toLowerCase());
+                config.events = eventList;
+            }
+        }
+        
+        // Parse individual event parameters
+        // subscription/sub
+        if (urlParams.has('sub') || urlParams.has('subscription')) {
+            hasConfig = true;
+            config.subscription = urlParams.get('sub') !== 'false' && urlParams.get('subscription') !== 'false';
+        }
+        
+        // bits with optional minimum
+        if (urlParams.has('bits')) {
+            hasConfig = true;
+            const bitsValue = urlParams.get('bits');
+            if (bitsValue === 'false') {
+                config.bits = false;
+            } else {
+                config.bits = true;
+                const minBits = parseInt(bitsValue);
+                if (!isNaN(minBits) && minBits > 0) {
+                    config.minBits = minBits;
+                }
+            }
+        }
+        
+        // raid with optional minimum viewers
+        if (urlParams.has('raid')) {
+            hasConfig = true;
+            const raidValue = urlParams.get('raid');
+            if (raidValue === 'false') {
+                config.raid = false;
+            } else {
+                config.raid = true;
+                const minRaiders = parseInt(raidValue);
+                if (!isNaN(minRaiders) && minRaiders > 0) {
+                    config.minRaiders = minRaiders;
+                }
+            }
+        }
+        
+        // giftsub
+        if (urlParams.has('giftsub')) {
+            hasConfig = true;
+            config.giftSub = urlParams.get('giftsub') !== 'false';
+        }
+        
+        // follow
+        if (urlParams.has('follow')) {
+            hasConfig = true;
+            config.follow = urlParams.get('follow') !== 'false';
+        }
+        
+        return hasConfig ? config : null;
+    }
+    
+    applyTwitchEventConfig() {
+        const config = this.twitchEventConfig;
+        
+        // Handle special cases first
+        if (config.all) {
+            // Enable all events
+            Object.keys(this.twitch.settings.triggers).forEach(key => {
+                this.twitch.settings.triggers[key].enabled = true;
+            });
+        } else if (config.none) {
+            // Disable all events
+            Object.keys(this.twitch.settings.triggers).forEach(key => {
+                this.twitch.settings.triggers[key].enabled = false;
+            });
+        } else if (config.events) {
+            // First disable all
+            Object.keys(this.twitch.settings.triggers).forEach(key => {
+                this.twitch.settings.triggers[key].enabled = false;
+            });
+            
+            // Then enable only specified events
+            config.events.forEach(event => {
+                // Map short names to full names
+                const eventMap = {
+                    'sub': 'subscription',
+                    'subs': 'subscription',
+                    'gift': 'giftSub',
+                    'gifts': 'giftSub',
+                    'giftsub': 'giftSub',
+                    'bit': 'bits',
+                    'cheer': 'bits',
+                    'cheers': 'bits',
+                    'raid': 'raid',
+                    'raids': 'raid',
+                    'follow': 'follow',
+                    'follows': 'follow'
+                };
+                
+                const eventKey = eventMap[event] || event;
+                if (this.twitch.settings.triggers[eventKey]) {
+                    this.twitch.settings.triggers[eventKey].enabled = true;
+                }
+            });
+        }
+        
+        // Apply individual settings
+        if (config.subscription !== undefined) {
+            this.twitch.settings.triggers.subscription.enabled = config.subscription;
+        }
+        
+        if (config.bits !== undefined) {
+            this.twitch.settings.triggers.bits.enabled = config.bits;
+            if (config.minBits) {
+                this.twitch.settings.triggers.bits.minBits = config.minBits;
+            }
+        }
+        
+        if (config.raid !== undefined) {
+            this.twitch.settings.triggers.raid.enabled = config.raid;
+            if (config.minRaiders) {
+                this.twitch.settings.triggers.raid.minViewers = config.minRaiders;
+            }
+        }
+        
+        if (config.giftSub !== undefined) {
+            this.twitch.settings.triggers.giftSub.enabled = config.giftSub;
+        }
+        
+        if (config.follow !== undefined) {
+            this.twitch.settings.triggers.follow.enabled = config.follow;
+        }
+        
+        // Save the configuration
+        this.twitch.saveSettings();
+        
+        // Update UI checkboxes if they exist
+        this.updateTwitchEventUI();
+    }
+    
+    updateTwitchEventUI() {
+        // Update checkboxes to reflect current state
+        const triggers = [
+            { id: 'triggerSubscription', key: 'subscription' },
+            { id: 'triggerGiftSub', key: 'giftSub' },
+            { id: 'triggerBits', key: 'bits' },
+            { id: 'triggerRaid', key: 'raid' },
+            { id: 'triggerFollow', key: 'follow' }
+        ];
+        
+        triggers.forEach(({ id, key }) => {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                checkbox.checked = this.twitch.settings.triggers[key].enabled;
+            }
+        });
+        
+        // Update min values
+        const minBits = document.getElementById('minBits');
+        if (minBits) {
+            minBits.value = this.twitch.settings.triggers.bits.minBits;
+        }
+        
+        const minRaiders = document.getElementById('minRaiders');
+        if (minRaiders) {
+            minRaiders.value = this.twitch.settings.triggers.raid.minViewers;
         }
     }
 }

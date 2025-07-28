@@ -128,8 +128,29 @@ https://tu-usuario.github.io/roulette-web/?auto-spin=30
 # Twitch con auto-hide (ruleta oculta hasta recibir evento)
 https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN
 
+# Solo suscripciones
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=sub
+
+# Solo bits y raids
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=bits,raid
+
+# Bits con mínimo de 500
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&bits=500
+
+# Raids con mínimo 10 viewers
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&raid=10
+
+# Deshabilitar follows
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&follow=false
+
+# Todos los eventos activados
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=all
+
+# Sin eventos (solo manual)
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&events=none
+
 # Combinar opciones
-https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&obs&compact
+https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&obs&compact&events=sub,bits&bits=100
 ```
 
 ## 🎨 Temas Disponibles
@@ -180,6 +201,41 @@ https://tu-usuario.github.io/roulette-web/?twitch=TU_ACCESS_TOKEN&obs&compact
 - Gira automáticamente
 - Se oculta 5 segundos después de mostrar el resultado
 - Perfecto para overlays en OBS que solo aparecen con eventos
+
+#### Configuración de Eventos por URL
+
+Puedes controlar qué eventos de Twitch activan la ruleta directamente desde la URL:
+
+**Parámetro `events`** - Lista de eventos separados por comas:
+- `sub` o `subscription` - Suscripciones
+- `gift` o `giftsub` - Subs regaladas
+- `bits` o `cheer` - Bits/Cheers
+- `raid` - Raids
+- `follow` - Follows
+- `all` - Activa todos los eventos
+- `none` - Desactiva todos los eventos
+
+**Parámetros individuales**:
+- `&sub=false` - Desactiva suscripciones
+- `&bits=500` - Activa bits con mínimo 500
+- `&raid=10` - Activa raids con mínimo 10 viewers
+- `&giftsub=true` - Activa subs regaladas
+- `&follow=false` - Desactiva follows
+
+**Ejemplos de uso**:
+```bash
+# Solo reaccionar a suscripciones
+?twitch=TOKEN&events=sub
+
+# Suscripciones y bits (mínimo 100)
+?twitch=TOKEN&events=sub,bits&bits=100
+
+# Todo excepto follows
+?twitch=TOKEN&events=all&follow=false
+
+# Solo raids grandes (50+ viewers)
+?twitch=TOKEN&events=raid&raid=50
+```
 
 ### Custom Presets
 
